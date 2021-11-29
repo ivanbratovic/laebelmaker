@@ -11,6 +11,7 @@ repos:
     rev: v3.0.0a4
     hooks:
       - id: pylint
+        args: [--disable=all, --enable=unused-import]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
