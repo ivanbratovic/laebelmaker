@@ -2,6 +2,13 @@
 
 Tool for generating Traefik labels
 
+## To-do/Guidelines for self
+
+* Generate Traefik labels using an interactive CLI
+* Generate Traefik labels using command-line options
+* Generate labels from existing service definitions (e.g. Docker Compose YAML files)
+* Ease of use must be a priority
+
 ## For developers
 
 Install all requirements before contributing. This is required for `pre-commit`.

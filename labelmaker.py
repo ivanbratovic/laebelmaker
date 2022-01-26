@@ -5,8 +5,10 @@ Generates Traefik labels for use in e.g. Docker containers.
 """
 
 from typing import *
+from label.label import *
 
 import readline
+
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2021, Ivan Bratović"
@@ -27,8 +29,21 @@ except FileNotFoundError:
 
 
 def main() -> None:
-    print("Hello world!")
-    input()
+    # Simple service with an explicit port
+    cfg = ServiceConfig(
+        name="test_service", rule=Rule("Host", ["example.com"]), port=25565
+    )
+    labels = gen_simple_label_set_for_service(cfg)
+    print("labels:", *labels, sep="\n  - ")
+    # Simple service with HTTPS redirect
+    cfg = ServiceConfig(
+        name="test_service",
+        rule=Rule("Host", ["example.com"]),
+        https_redir=True,
+        tls_resolver="letsencrypt",
+    )
+    labels = gen_simple_label_set_for_service(cfg)
+    print("labels:", *labels, sep="\n  - ")
     readline.write_history_file(HISTORY_FILE)
 
 
