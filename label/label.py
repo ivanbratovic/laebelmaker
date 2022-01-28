@@ -168,8 +168,8 @@ def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
     # Get only TCP exposed ports
-    exposed_ports: List[str] = image.attrs["ContainerConfig"]["ExposedPorts"].keys()
-    filtered_ports = list(filter(lambda port: "tcp" in port, exposed_ports))
+    exposed_ports = image.attrs["ContainerConfig"]["ExposedPorts"].keys()
+    filtered_ports: List[str] = list(filter(lambda port: "tcp" in port, exposed_ports))
     # Strip the suffix '/tcp' and convert to int
     tcp_ports: List[int] = list(map(int, map(lambda port: port[:-4], filtered_ports)))
     return tcp_ports
