@@ -163,10 +163,10 @@ def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
             )
         assert False, "Parsing Dockerfile is not implemented yet"
     try:
-        image = DOCKER_CLIENT.images.get(image_name + "salkdnalskd")
+        image = DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
         print("Pulling image:")
-        with Loader(f"{image_name}", f"{image_name} Pulled"):
+        with Loader(f"{image_name} Pulling", f"{image_name} Pulled"):
             DOCKER_CLIENT.images.pull(image_name)
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
