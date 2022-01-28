@@ -1,0 +1,32 @@
+version: "3"
+services:
+    testapp:
+        image: nginx
+        depends_on:
+            - testapp-db
+        hostname: testapp
+        container_name: testapp
+        volumes:
+            - testapp_data:/usr/src/testapp/files
+        restart: unless-stopped
+        ports:
+            - 3000:3000
+
+    testapp-db:
+        image: postgres:11
+        hostname: testapp-db
+        container_name: testapp-db
+        volumes:
+            - testapp-db_data:/var/lib/postgresql/data
+        restart: unless-stopped
+        environment:
+            - POSTGRES_PASSWORD=admin
+            - POSTGRES_USER=testapp
+        ports:
+            - 5432:5432
+
+volumes:
+    testapp_data:
+        external: true
+    testapp-db_data:
+        external: true

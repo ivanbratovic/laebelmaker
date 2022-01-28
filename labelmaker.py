@@ -44,6 +44,9 @@ def main() -> None:
     )
     labels = gen_simple_label_set_for_service(cfg)
     print("labels:", *labels, sep="\n  - ")
+    # Read from docker-compose.yml
+    labels = gen_label_set_from_compose("docker-compose.yml")
+    print("labels:", *labels, sep="\n  - ")
     readline.write_history_file(HISTORY_FILE)
 
 
