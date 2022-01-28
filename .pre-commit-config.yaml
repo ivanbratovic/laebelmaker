@@ -18,4 +18,4 @@ repos:
     hooks:
       - id: mypy
         exclude: ^tests/
-        args: [--strict, --namespace-packages]
+        args: [--strict, --namespace-packages, --ignore-missing-imports]
