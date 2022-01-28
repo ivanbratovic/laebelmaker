@@ -13,9 +13,11 @@ e.g. '{traefik.http.routers}.my_router.rule=Host(`www.hr`)'
 
 from typing import *
 from dataclasses import dataclass
+from util.loader import Loader
 
 import yaml
 import docker
+
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2021, Ivan Bratović"
@@ -28,11 +30,11 @@ DOCKER_CLIENT = docker.from_env()
 
 
 class UnknownRuleTypeException(Exception):
-    pass
+    """A Traefik rule tried to be created with an unkown type"""
 
 
 class NoInformationException(Exception):
-    pass
+    """Labelmaker cannot continue running due to lack of information"""
 
 
 class Rule:
@@ -124,7 +126,7 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
     if len(options) > 1:
         print(f"Found multiple {item_name}s.")
         for i, service in enumerate(options):
-            print(f"{i+1}. {service}")
+            print(f" {i+1}. {service}")
         answer = input(f"Select {item_name} ({default_index + 1}): ")
         if len(answer) == 0:
             selection = default_index
@@ -161,10 +163,11 @@ def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
             )
         assert False, "Parsing Dockerfile is not implemented yet"
     try:
-        image = DOCKER_CLIENT.images.get(image_name)
+        image = DOCKER_CLIENT.images.get(image_name + "salkdnalskd")
     except docker.errors.ImageNotFound:
-        print(f"Pulling image {image_name}...")
-        DOCKER_CLIENT.images.pull(image_name)
+        print("Pulling image:")
+        with Loader(f"{image_name}", f"{image_name} Pulled"):
+            DOCKER_CLIENT.images.pull(image_name)
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
     # Get only TCP exposed ports
@@ -181,7 +184,7 @@ def gen_label_set_from_compose(path: str) -> List[str]:
             data = yaml.safe_load(docker_compose)
     except FileNotFoundError:
         print(f"Cannot open file {path} for reading.")
-        return [""]
+        raise
     # Get service name
     possible_services = get_children_keys(data["services"])
     service_name = query_selection(possible_services, "service")

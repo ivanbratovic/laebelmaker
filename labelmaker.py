@@ -5,7 +5,7 @@ Generates Traefik labels for use in e.g. Docker containers.
 """
 
 from typing import *
-from label.label import *
+from util.label import *
 
 import readline
 
