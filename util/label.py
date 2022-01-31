@@ -165,13 +165,14 @@ def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
     try:
         image = DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
+        # TODO: Consider using the Docker Registry HTTP API for getting image data
         print("Pulling image:")
         with Loader(f"{image_name} Pulling", f"{image_name} Pulled"):
             DOCKER_CLIENT.images.pull(image_name)
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
     # Get only TCP exposed ports
-    exposed_ports = image.attrs["ContainerConfig"]["ExposedPorts"].keys()
+    exposed_ports = image.attrs["Config"]["ExposedPorts"].keys()
     filtered_ports: List[str] = list(filter(lambda port: "tcp" in port, exposed_ports))
     # Strip the suffix '/tcp' and convert to int
     tcp_ports: List[int] = list(map(int, map(lambda port: port[:-4], filtered_ports)))
