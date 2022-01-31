@@ -15,7 +15,7 @@ __author__ = "https://stackoverflow.com/users/3867406/ted"
 
 class Loader:
     def __init__(
-        self, desc: str = "Loading...", end: str = "Done!", timeout: float = 0.1
+        self, desc: str = "Loading...", end: str = "Done!", timeout: float = 0.125
     ) -> None:
         """
         A loader-like context manager
