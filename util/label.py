@@ -151,19 +151,44 @@ def get_children_keys(d: Dict[str, Any]) -> List[str]:
     return [str(key) for key in d]
 
 
-def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
+def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
+    # Get only TCP exposed ports
+    exposed_ports = attrs["Config"]["ExposedPorts"].keys()
+    filtered_ports: List[str] = list(filter(lambda port: "tcp" in port, exposed_ports))
+    # Strip the suffix '/tcp' and convert to int
+    tcp_ports: List[int] = list(map(int, map(lambda port: port[:-4], filtered_ports)))
+    return tcp_ports
+
+
+def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[str]:
+    # Get port
+    ports = get_tcp_ports_from_attrs(attrs)
+    port = query_selection(ports, "port")
+    # Get hostname
+    hostname = query_change(name, "hostname")
+    # Generate config
+    config = ServiceConfig(name=name, rule=Rule("Host", [hostname]), port=port)
+    # Get HTTPS redirect
+    https_redir = query_change("no", "HTTPS redirection")
+    if https_redir.lower() in ("y", "yes"):
+        config.https_redir = True
+        tls_resolver = input("TLS resolver to use: ")
+        config.tls_resolver = tls_resolver
+    return gen_simple_label_set_for_service(config)
+
+
+def gen_label_set_from_container(container_name: str) -> List[str]:
     try:
-        image_name = service["image"]
-    except KeyError:
-        try:
-            build_file = service["build"]
-        except KeyError:
-            raise NoInformationException(
-                "No image or build information found in service definition"
-            )
-        assert False, "Parsing Dockerfile is not implemented yet"
+        container = DOCKER_CLIENT.containers.get(container_name)
+    except docker.errors.NotFound:
+        raise NoInformationException("Could not find the info of the given container")
+
+    return gen_label_set_from_docker_attrs(container.attrs, container_name)
+
+
+def gen_label_set_from_image(image_name: str) -> List[str]:
     try:
-        image = DOCKER_CLIENT.images.get(image_name)
+        DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
         # TODO: Consider using the Docker Registry HTTP API for getting image data
         print("Pulling image:")
@@ -171,12 +196,8 @@ def get_exposed_tcp_ports_from_image(service: Dict[str, Any]) -> List[int]:
             DOCKER_CLIENT.images.pull(image_name)
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
-    # Get only TCP exposed ports
-    exposed_ports = image.attrs["Config"]["ExposedPorts"].keys()
-    filtered_ports: List[str] = list(filter(lambda port: "tcp" in port, exposed_ports))
-    # Strip the suffix '/tcp' and convert to int
-    tcp_ports: List[int] = list(map(int, map(lambda port: port[:-4], filtered_ports)))
-    return tcp_ports
+    base_image_name = image_name.split(":")[0].split("/")[-1]
+    return gen_label_set_from_docker_attrs(image.attrs, base_image_name)
 
 
 def gen_label_set_from_compose(path: str) -> List[str]:
@@ -189,17 +210,16 @@ def gen_label_set_from_compose(path: str) -> List[str]:
     # Get service name
     possible_services = get_children_keys(data["services"])
     service_name = query_selection(possible_services, "service")
-    # Get port
-    ports = get_exposed_tcp_ports_from_image(data["services"][service_name])
-    port = query_selection(ports, "port")
-    # Get hostname
-    hostname = query_change(service_name, "hostname")
-    # Generate config
-    config = ServiceConfig(name=service_name, rule=Rule("Host", [hostname]), port=port)
-    # Get HTTPS redirect
-    https_redir = query_change("no", "HTTPS redirection")
-    if https_redir.lower() in ("y", "yes"):
-        config.https_redir = True
-        tls_resolver = input("TLS resolver to use: ")
-        config.tls_resolver = tls_resolver
-    return gen_simple_label_set_for_service(config)
+    service = data["services"][service_name]
+    # Get image data
+    try:
+        image_name = service["image"]
+        return gen_label_set_from_image(image_name)
+    except KeyError:
+        try:
+            build_file = service["build"]
+        except KeyError:
+            raise NoInformationException(
+                "No image or build information found in service definition"
+            )
+        assert False, "Parsing Dockerfile is not implemented yet"

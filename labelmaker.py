@@ -27,10 +27,16 @@ def main() -> None:
         help="use interactive mode",
     )
     parser.add_argument(
-        "-c",
+        "-d",
         "--docker-compose",
         metavar="FILE",
         help="generate labels from a given Compose file",
+    )
+    parser.add_argument(
+        "-c",
+        "--container",
+        metavar="NAME",
+        help="generate labels for a given container on the system",
     )
 
     args = parser.parse_args()
@@ -54,6 +60,13 @@ def main() -> None:
             print(*labels, sep="\n")
         except NoInformationException:
             print("Invalid docker-compose file given.")
+    if args.container:
+        try:
+            labels = gen_label_set_from_container(args.container)
+            print()
+            print(*labels, sep="\n")
+        except NoInformationException:
+            print("Invalid container identifier given.")
 
 
 if __name__ == "__main__":
