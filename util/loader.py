@@ -7,7 +7,7 @@ from threading import Thread
 from time import sleep
 
 """
-Module for Label representations and easy handling.
+Module for displaying a loading animation in a separate thread.
 """
 
 __author__ = "https://stackoverflow.com/users/3867406/ted"
