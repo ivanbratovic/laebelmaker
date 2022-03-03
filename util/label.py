@@ -186,7 +186,7 @@ def gen_label_set_from_container(container_name: str) -> List[str]:
     return gen_label_set_from_docker_attrs(container.attrs, container_name)
 
 
-def gen_label_set_from_image(image_name: str) -> List[str]:
+def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[str]:
     try:
         DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
@@ -197,7 +197,11 @@ def gen_label_set_from_image(image_name: str) -> List[str]:
     finally:
         image = DOCKER_CLIENT.images.get(image_name)
     base_image_name = image_name.split(":")[0].split("/")[-1]
-    return gen_label_set_from_docker_attrs(image.attrs, base_image_name)
+    if override_name:
+        name = override_name
+    else:
+        name = base_image_name
+    return gen_label_set_from_docker_attrs(image.attrs, name)
 
 
 def gen_label_set_from_compose(path: str) -> List[str]:
@@ -214,7 +218,7 @@ def gen_label_set_from_compose(path: str) -> List[str]:
     # Get image data
     try:
         image_name = service["image"]
-        return gen_label_set_from_image(image_name)
+        return gen_label_set_from_image(image_name, service_name)
     except KeyError:
         try:
             build_file = service["build"]
