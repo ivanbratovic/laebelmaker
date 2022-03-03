@@ -23,7 +23,7 @@ def main() -> None:
     print("labels:", *labels, sep="\n  - ")
 
     print("\n # Read from docker-compose.yml\n")
-    labels = gen_label_set_from_compose("docker-compose.yml")
+    labels = gen_label_set_from_compose("docker-compose-testapp.yml")
     print("labels:", *labels, sep="\n  - ")
 
 
