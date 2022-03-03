@@ -14,7 +14,16 @@ __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2021, Ivan Bratović"
 __license__ = "MIT"
 
-__version__ = "1.0.0"
+__version__ = "0.0.1"
+
+
+def has_yaml_extension(path: str) -> bool:
+    basename = path.split("/")[-1].strip()
+    if basename[-4:].lower() == ".yml":
+        return True
+    if basename[-5:].lower() == ".yaml":
+        return True
+    return False
 
 
 def main() -> None:
@@ -39,7 +48,7 @@ def main() -> None:
         help="generate labels for a given container on the system",
     )
 
-    args = parser.parse_args()
+    args, unknownargs = parser.parse_known_args()
 
     if args.interactive:
         # Initialize readline interface
@@ -67,6 +76,16 @@ def main() -> None:
             print(*labels, sep="\n")
         except NoInformationException:
             print("Invalid container identifier given.")
+    for arg in unknownargs:
+        if has_yaml_extension(arg):
+            try:
+                labels = gen_label_set_from_compose(arg)
+                print()
+                print(*labels, sep="\n")
+            except NoInformationException:
+                print("Unkown argument given: ", arg)
+        else:
+            print("Unkown argument given: ", arg)
 
 
 if __name__ == "__main__":
