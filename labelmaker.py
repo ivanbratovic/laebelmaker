@@ -83,7 +83,8 @@ def main() -> None:
                 print()
                 print(*labels, sep="\n")
             except NoInformationException:
-                print("Unkown argument given: ", arg)
+                print("Unkown YAML file path: ", arg)
+                raise
         else:
             print("Unkown argument given: ", arg)
 
