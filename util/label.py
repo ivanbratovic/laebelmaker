@@ -162,7 +162,11 @@ def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
 
 def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[str]:
     # Get port
-    ports = get_tcp_ports_from_attrs(attrs)
+    try:
+        ports = get_tcp_ports_from_attrs(attrs)
+    except KeyError:
+        print("Could not get ports from docker attributes.")
+        ports = [int(input("Please manually input the port number: "))]
     port = query_selection(ports, "port")
     # Get hostname
     hostname = query_change(name, "hostname")
