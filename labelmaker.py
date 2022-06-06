@@ -51,6 +51,7 @@ def main() -> None:
     args, unknownargs = parser.parse_known_args()
 
     if args.interactive:
+        assert False, "Interactive mode is not implemented yet"
         # Initialize readline interface
         HISTORY_FILE = ".labelmaker_history"
         readline.set_history_length(1000)
@@ -60,7 +61,6 @@ def main() -> None:
         except FileNotFoundError:
             open(HISTORY_FILE, "wb").close()
             HISTORY_LEN = 0
-        assert False, "Interactive mode is not implemented yet"
         readline.write_history_file(HISTORY_FILE)
     if args.docker_compose:
         try:
@@ -76,17 +76,21 @@ def main() -> None:
             print(*labels, sep="\n")
         except NoInformationException:
             print("Invalid container identifier given.")
-    for arg in unknownargs:
-        if has_yaml_extension(arg):
-            try:
-                labels = gen_label_set_from_compose(arg)
-                print()
-                print(*labels, sep="\n")
-            except NoInformationException:
-                print("Unkown YAML file path: ", arg)
-                raise
-        else:
-            print("Unkown argument given: ", arg)
+    if unknownargs:
+        for arg in unknownargs:
+            if has_yaml_extension(arg):
+                try:
+                    labels = gen_label_set_from_compose(arg)
+                    print()
+                    print(*labels, sep="\n")
+                except NoInformationException:
+                    print("Unkown YAML file path: ", arg)
+                    raise
+            else:
+                print("Unkown argument given: ", arg)
+    else:
+        print("No arguments given.")
+        parser.print_help()
 
 
 if __name__ == "__main__":
