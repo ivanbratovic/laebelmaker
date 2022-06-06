@@ -115,7 +115,7 @@ def gen_simple_label_set_for_service(
     if port > 0:
         # Traefik service
         label_set.append(
-            f"{SERVICE_PREFIX}.{service_name}.server.loadbalancer.port={port}"
+            f"{SERVICE_PREFIX}.{service_name}.loadbalancer.server.port={port}"
         )
     return label_set
 
