@@ -6,6 +6,7 @@ Generates Traefik labels for use in e.g. Docker containers.
 
 from typing import *
 from util.label import *
+from util.formatter import *
 
 import readline
 import argparse
@@ -15,6 +16,8 @@ __copyright__ = "Copyright 2021, Ivan Bratović"
 __license__ = "MIT"
 
 __version__ = "0.0.1"
+
+FORMATS = ["none", "docker", "compose"]
 
 
 def has_yaml_extension(path: str) -> bool:
@@ -47,8 +50,19 @@ def main() -> None:
         metavar="NAME",
         help="generate labels for a given container on the system",
     )
+    parser.add_argument(
+        "-f",
+        "--format",
+        metavar="FORMAT",
+        help=f"set output format, one of: [{', '.join(FORMATS)}]",
+        choices=FORMATS,
+        default="newline",
+    )
 
     args, unknownargs = parser.parse_known_args()
+
+    formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
+    labels: List[str] = []
 
     if args.interactive:
         assert False, "Interactive mode is not implemented yet"
@@ -64,25 +78,19 @@ def main() -> None:
         readline.write_history_file(HISTORY_FILE)
     if args.docker_compose:
         try:
-            labels = gen_label_set_from_compose(args.docker_compose)
-            print()
-            print(*labels, sep="\n")
+            labels += gen_label_set_from_compose(args.docker_compose)
         except NoInformationException:
             print("Invalid docker-compose file given.")
     if args.container:
         try:
-            labels = gen_label_set_from_container(args.container)
-            print()
-            print(*labels, sep="\n")
+            labels += gen_label_set_from_container(args.container)
         except NoInformationException:
             print("Invalid container identifier given.")
     if unknownargs:
         for arg in unknownargs:
             if has_yaml_extension(arg):
                 try:
-                    labels = gen_label_set_from_compose(arg)
-                    print()
-                    print(*labels, sep="\n")
+                    labels += gen_label_set_from_compose(arg)
                 except NoInformationException:
                     print("Unkown YAML file path: ", arg)
                     raise
@@ -91,6 +99,11 @@ def main() -> None:
     else:
         print("No arguments given.")
         parser.print_help()
+
+    if labels:
+        print("-- START GENERATED LABELS --")
+        print(formatter(labels), end="")
+        print("-- END GENERATED LABELS   --")
 
 
 if __name__ == "__main__":

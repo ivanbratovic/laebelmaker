@@ -20,11 +20,11 @@ def main() -> None:
         tls_resolver="letsencrypt",
     )
     labels = gen_simple_label_set_for_service(cfg)
-    print("labels:", *labels, sep="\n  - ")
+    print(f"Compose labels:\n{formatter_compose(labels)}")
 
     print("\n # Read from docker-compose.yml\n")
     labels = gen_label_set_from_compose("docker-compose-testapp.yml")
-    print("labels:", *labels, sep="\n  - ")
+    print(f"Docker run options:\n{formatter_docker(labels)}")
 
 
 if __name__ == "__main__":
