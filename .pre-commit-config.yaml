@@ -19,3 +19,5 @@ repos:
       - id: mypy
         exclude: ^tests/
         args: [--strict, --namespace-packages, --ignore-missing-imports]
+        additional_dependencies:
+          - "types-PyYAML>=6.0.3"
