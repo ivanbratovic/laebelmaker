@@ -56,7 +56,7 @@ def main() -> None:
         metavar="FORMAT",
         help=f"set output format, one of: [{', '.join(FORMATS)}]",
         choices=FORMATS,
-        default="newline",
+        default="none",
     )
 
     args, unknownargs = parser.parse_known_args()
