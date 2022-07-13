@@ -1,4 +1,4 @@
-pyho# Laebelmaker
+# Laebelmaker
 
 Tool for generating Traefik labels
 
