@@ -96,14 +96,14 @@ def main() -> None:
                     raise
             else:
                 print("Unkown argument given: ", arg)
-    else:
-        print("No arguments given.")
-        parser.print_help()
 
     if labels:
         print("-- START GENERATED LABELS --")
         print(formatter(labels), end="")
         print("-- END GENERATED LABELS   --")
+    else:
+        print("No arguments given.")
+        parser.print_help()
 
 
 if __name__ == "__main__":
