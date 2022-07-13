@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laebelmaker"
+version = "0.1.0"
+description = "Generate traefik labels easily"
+readme = "README.md"
+authors = [{ name = "Ivan Bratović", email = "ivanbratovic4@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["traefik", "label", "generate"]
+dependencies = [
+    "pyyaml>=6.0",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "pylint", "mypy", "types-PyYAML", "pre-commit"]
+
+
+[project.scripts]
+realpython = "laebelmaker.__main__:main"

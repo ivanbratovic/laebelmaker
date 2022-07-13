@@ -34,7 +34,7 @@ class UnknownRuleTypeException(Exception):
 
 
 class NoInformationException(Exception):
-    """Labelmaker cannot continue running due to lack of information"""
+    """Laebelmaker cannot continue running due to lack of information"""
 
 
 class Rule:

@@ -67,7 +67,7 @@ def main() -> None:
     if args.interactive:
         assert False, "Interactive mode is not implemented yet"
         # Initialize readline interface
-        HISTORY_FILE = ".labelmaker_history"
+        HISTORY_FILE = ".laebelmaker_history"
         readline.set_history_length(1000)
         try:
             readline.read_history_file(HISTORY_FILE)

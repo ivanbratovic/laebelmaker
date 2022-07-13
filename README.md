@@ -1,4 +1,4 @@
-# Labelmaker
+# Laebelmaker
 
 Tool for generating Traefik labels
 
