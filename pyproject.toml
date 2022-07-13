@@ -25,4 +25,4 @@ dev = ["black", "pylint", "mypy", "types-PyYAML", "pre-commit", "docker"]
 docker = ["docker"]
 
 [project.scripts]
-realpython = "laebelmaker.__main__:main"
+laebelmaker = "laebelmaker:main"
