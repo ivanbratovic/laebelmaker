@@ -73,8 +73,8 @@ class ServiceConfig:
     rule: Rule
     port: int = -1
     https_redir: bool = False
-    web: str = "web"
-    websecure: str = "websecure"
+    web_entrypoint: str = "web"
+    websecure_entrypoint: str = "websecure"
     tls_resolver: str = ""
 
 
@@ -94,10 +94,12 @@ def gen_simple_label_set_for_service(
     label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
     if config.https_redir:
         # HTTPS router
-        label_set.append(f"{ROUTER_PREFIX}.{service_name}.entrypoints={config.web}")
+        label_set.append(
+            f"{ROUTER_PREFIX}.{service_name}.entrypoints={config.web_entrypoint}"
+        )
         label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.rule={rule}")
         label_set.append(
-            f"{ROUTER_PREFIX}.{service_name}-https.entrypoints={config.websecure}"
+            f"{ROUTER_PREFIX}.{service_name}-https.entrypoints={config.websecure_entrypoint}"
         )
         # Middleware for redirect
         middleware_name = f"{service_name}-redir"
@@ -159,7 +161,7 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
 
 def query_change(item: Any, item_name: str) -> Any:
     typ = type(item)
-    answer = input(f"Change {item_name} ('{item}'): ")
+    answer = input(f"Enter new value for '{item_name}' (currently '{item}'): ")
     if len(answer) != 0:
         item = answer
     return typ(item)
@@ -224,13 +226,8 @@ def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[st
     hostname = query_change(name, "hostname")
     # Generate config
     config = ServiceConfig(name=name, rule=Rule("Host", [hostname]), port=port)
-    # Get HTTPS redirect
-    https_redir = query_change("no", "HTTPS redirection")
-    if https_redir.lower() in ("y", "yes"):
-        config.https_redir = True
-        tls_resolver = input("TLS resolver to use: ")
-        config.tls_resolver = tls_resolver
-    return gen_simple_label_set_for_service(config)
+
+    return gen_label_set_from_limited_info(config)
 
 
 def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
@@ -265,7 +262,7 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
     return gen_label_set_from_docker_attrs(image.attrs, name)
 
 
-def gen_label_set_from_compose(path: str) -> List[str] | NoReturn:
+def gen_label_set_from_compose(path: str) -> List[str]:
     try:
         with open(path, "r") as docker_compose:
             data = yaml.safe_load(docker_compose)
@@ -276,7 +273,7 @@ def gen_label_set_from_compose(path: str) -> List[str] | NoReturn:
     possible_services = get_children_keys(data["services"])
     service_name = query_selection(possible_services, "service")
     service = data["services"][service_name]
-    # Get image data
+    # Get entrypoint names
     try:
         image_name = service["image"]
         if label_set := gen_label_set_from_image(image_name, service_name):
@@ -284,6 +281,7 @@ def gen_label_set_from_compose(path: str) -> List[str] | NoReturn:
         print(
             "The docker module is not installed. We'll have to query some information from you..."
         )
+        return gen_label_set_from_user(service_name)
     except KeyError:
         try:
             build_file = service["build"]
@@ -292,5 +290,3 @@ def gen_label_set_from_compose(path: str) -> List[str] | NoReturn:
                 "No image or build information found in service definition"
             )
         assert False, "Parsing Dockerfile is not implemented yet"
-
-    return []
