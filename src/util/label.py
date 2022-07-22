@@ -16,8 +16,12 @@ from dataclasses import dataclass
 from util.loader import Loader
 from util.formatter import *
 import yaml
-import docker
 
+try:
+    import docker
+except ModuleNotFoundError:
+    print("Install the docker module for advanced Docker support")
+    docker = False
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2021, Ivan Bratović"
@@ -26,7 +30,8 @@ __license__ = "MIT"
 
 ROUTER_PREFIX = "traefik.http.routers"
 SERVICE_PREFIX = "traefik.http.services"
-DOCKER_CLIENT = docker.from_env()
+if docker:
+    DOCKER_CLIENT = docker.from_env()
 
 
 class UnknownRuleTypeException(Exception):
@@ -194,7 +199,10 @@ def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[st
     return gen_simple_label_set_for_service(config)
 
 
-def gen_label_set_from_container(container_name: str) -> List[str]:
+def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
+    if not docker:
+        return []
+
     try:
         container = DOCKER_CLIENT.containers.get(container_name)
     except docker.errors.NotFound:
@@ -204,6 +212,8 @@ def gen_label_set_from_container(container_name: str) -> List[str]:
 
 
 def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[str]:
+    if not docker:
+        return []
     try:
         DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
@@ -221,7 +231,7 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
     return gen_label_set_from_docker_attrs(image.attrs, name)
 
 
-def gen_label_set_from_compose(path: str) -> List[str]:
+def gen_label_set_from_compose(path: str) -> List[str] | NoReturn:
     try:
         with open(path, "r") as docker_compose:
             data = yaml.safe_load(docker_compose)
@@ -235,7 +245,11 @@ def gen_label_set_from_compose(path: str) -> List[str]:
     # Get image data
     try:
         image_name = service["image"]
-        return gen_label_set_from_image(image_name, service_name)
+        if label_set := gen_label_set_from_image(image_name, service_name):
+            return label_set
+        print(
+            "The docker module is not installed. We'll have to query some information from you..."
+        )
     except KeyError:
         try:
             build_file = service["build"]
@@ -244,3 +258,5 @@ def gen_label_set_from_compose(path: str) -> List[str]:
                 "No image or build information found in service definition"
             )
         assert False, "Parsing Dockerfile is not implemented yet"
+
+    return []
