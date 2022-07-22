@@ -120,6 +120,19 @@ def gen_simple_label_set_for_service(
     return label_set
 
 
+def input_item(name: str, type: type) -> Any:
+    if type == int:
+        hint_text = " (integer)"
+    elif type == bool:
+        hint_text = " (yes/no)"
+    else:
+        hint_text = ""
+    new_value = input(f"Enter value for '{name}'{hint_text}: ")
+    if type == bool and new_value.lower() in ("false", "no", "0"):
+        new_value = ""
+    return type(new_value)
+
+
 def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
     if len(options) < 1:
         raise NoInformationException(f"No {item_name} choices given.")
