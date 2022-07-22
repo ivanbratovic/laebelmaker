@@ -12,7 +12,7 @@ e.g. '{traefik.http.routers}.my_router.rule=Host(`www.hr`)'
 """
 
 from typing import *
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from util.loader import Loader
 from util.formatter import *
 import yaml
@@ -167,6 +167,40 @@ def query_change(item: Any, item_name: str) -> Any:
 
 def get_children_keys(d: Dict[str, Any]) -> List[str]:
     return [str(key) for key in d]
+
+
+def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
+    for key, value in asdict(config).items():
+        if key in ("name", "rule"):
+            continue
+
+        if (
+            key in ("tls_resolver", "web_entrypoint", "websecure_entrypoint")
+            and not config.https_redir
+        ):
+            continue
+
+        if key == "port" and config.port != -1:
+            continue
+
+        typ = type(config.__getattribute__(key))
+
+        if not value:
+            new_value = input_item(key, typ)
+            config.__setattr__(key, new_value)
+        else:
+            config.__setattr__(key, typ(query_change(value, key)))
+    return gen_simple_label_set_for_service(config)
+
+
+def gen_label_set_from_user(name: str = "") -> List[str]:
+    if not name:
+        name = input_item("name", str)
+    # Get hostname
+    hostname = query_change(name, "hostname")
+    rule = Rule("Host", [hostname])
+    config = ServiceConfig(name, rule)
+    return gen_label_set_from_limited_info(config)
 
 
 def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
