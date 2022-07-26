@@ -8,7 +8,6 @@ version = "0.1.1"
 description = "Generate traefik labels easily"
 readme = "README.md"
 authors = [{ name = "Ivan Bratović", email = "ivanbratovic4@gmail.com" }]
-license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
