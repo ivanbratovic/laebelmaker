@@ -1,8 +1,9 @@
 # Readline history file
 *_history
 
-# Idea files
+# Editor files
 .idea
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
