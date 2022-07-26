@@ -16,6 +16,7 @@ from dataclasses import dataclass, asdict
 from util.loader import Loader
 from util.formatter import *
 import yaml
+import readline
 
 try:
     import docker
@@ -88,9 +89,9 @@ def gen_simple_label_set_for_service(
     label_set = []
     if enable:
         label_set.append(traefik_enable())
-    service_name = config.name
+    service_name: str = config.name
     # Traefik router
-    rule = config.rule
+    rule: Rule = config.rule
     label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
     if config.https_redir:
         # HTTPS router
@@ -127,6 +128,17 @@ def gen_simple_label_set_for_service(
     return label_set
 
 
+def input_prefilled(prompt: str, text: str) -> str:
+    def hook() -> None:
+        readline.insert_text(text)
+        readline.redisplay()
+
+    readline.set_pre_input_hook(hook)
+    result = input(prompt)
+    readline.set_pre_input_hook()
+    return result
+
+
 def input_item(name: str, type: type) -> Any:
     if type == int:
         hint_text = " (integer)"
@@ -161,7 +173,7 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
 
 def query_change(item: Any, item_name: str) -> Any:
     typ = type(item)
-    answer = input(f"Enter new value for '{item_name}' (currently '{item}'): ")
+    answer = input_prefilled(f"Enter new value for '{item_name}': ", item)
     if len(answer) != 0:
         item = answer
     return typ(item)
