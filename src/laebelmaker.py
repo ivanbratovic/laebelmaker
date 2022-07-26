@@ -65,13 +65,13 @@ def main() -> Optional[NotImplementedType]:
     labels: List[str] = []
 
     if args.interactive:
-        return NotImplemented
-    if args.docker_compose:
+        labels = gen_label_set_from_user("")
+    elif args.docker_compose:
         try:
             labels += gen_label_set_from_compose(args.docker_compose)
         except NoInformationException:
             print("Invalid docker-compose file given.")
-    if args.container:
+    elif args.container:
         try:
             labels += gen_label_set_from_container(args.container)
         except NoInformationException:
