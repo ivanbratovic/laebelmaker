@@ -45,12 +45,12 @@ class NoInformationException(Exception):
 
 class Rule:
     """
-    Represents a simple Traefik HTTP rule
+    Represents a Traefik HTTP Router rule
     """
 
     ALLOWED_RULES = ("Host", "Path", "Headers")
 
-    def __init__(self, t: str, content: List[str]):
+    def __init__(self, t: str, *content: str) -> None:
         if t not in self.ALLOWED_RULES:
             raise UnknownRuleTypeException("Invalid rule or not implemented yet")
         self.content = content
@@ -236,7 +236,7 @@ def gen_label_set_from_user(name: str = "") -> List[str]:
         name = input_item("name", str)
     # Get hostname
     hostname = query_change(name, "hostname")
-    rule = Rule("Host", [hostname])
+    rule = Rule("Host", hostname)
     config = ServiceConfig(name, rule)
     return gen_label_set_from_limited_info(config)
 
@@ -261,7 +261,7 @@ def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[st
     # Get hostname
     hostname = query_change(name, "hostname")
     # Generate config
-    config = ServiceConfig(name=name, rule=Rule("Host", [hostname]), port=port)
+    config = ServiceConfig(name=name, rule=Rule("Host", hostname), port=port)
 
     return gen_label_set_from_limited_info(config)
 
