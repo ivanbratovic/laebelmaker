@@ -92,13 +92,21 @@ Enter value for 'tls_resolver': letsencrypt
 -- END GENERATED LABELS   --
 ```
 
-## To-do/Guidelines for self
+## To-do
 
-* [ ] Generate Traefik labels using an interactive CLI
-* [ ] Generate Traefik labels using command-line options
-* [ ] Generate labels from existing service definitions (e.g. Docker Compose YAML files)
-* [ ] Ease of use must be a priority
-* [ ] Learn how to and publish this project to PyPi
+* [x] Generate Traefik labels using an interactive CLI
+* [x] Generate Traefik labels using command-line options
+* [x] Generate labels from existing service definitions (e.g. Docker Compose YAML files)
+* [x] Learn how to and publish this project to PyPi
+* [ ] Add more data sources
+* [ ] Add more Rule types
+* [ ] Add combined Rule types (with logical operators)
+* [ ] Compatibility for Windows machines
+
+## Guidelines for development
+
+* Ease of use is a priority
+* More guidelines must be added
 
 ## For developers
 
