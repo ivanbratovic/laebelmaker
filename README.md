@@ -30,6 +30,24 @@ options:
 
 ## Examples
 
+### GUI Interactive Mode
+
+```
+$ laebelmaker -i
+Enter value for 'name': testapp
+Enter new value for 'hostname': test
+Enter new value for 'port': 25565
+Enter value for 'https_redir' (yes/no): no
+-- START GENERATED LABELS --
+traefik.enable=true
+traefik.http.routers.testapp.rule=Host(`test`)
+traefik.http.services.testapp.loadbalancer.server.port=25565
+-- END GENERATED LABELS   --
+```
+
+
+### With Compose YAML file
+
 Invoking laebelmaker on a Docker Compose YAML file, the program will
 prompt the user for different options, with the defaults given in
 parentheses. This example also modifies the output format with
@@ -42,19 +60,21 @@ Found multiple services.
  1. testapp
  2. testapp-db
 Select service (1): 1
-Change hostname ('testapp'): testapp-newname
-Change HTTPS redirection ('no'): yes
-TLS resolver to use: default
+Enter new value for 'hostname': testapp-customname
+Enter value for 'https_redir' (yes/no): yes
+Enter new value for 'web_entrypoint': http
+Enter new value for 'websecure_entrypoint': https
+Enter value for 'tls_resolver': letsencrypt
 -- START GENERATED LABELS --
   - traefik.enable=true
-  - traefik.http.routers.testapp.rule=Host(`testapp-newname`)
-  - traefik.http.routers.testapp.entrypoints=web
-  - traefik.http.routers.testapp-https.rule=Host(`testapp-newname`)
-  - traefik.http.routers.testapp-https.entrypoints=websecure
+  - traefik.http.routers.testapp.rule=Host(`testapp-customname`)
+  - traefik.http.routers.testapp.entrypoints=http
+  - traefik.http.routers.testapp-https.rule=Host(`testapp-customname`)
+  - traefik.http.routers.testapp-https.entrypoints=https
   - traefik.http.routers.testapp.middlewares=testapp-redir
   - traefik.http.middlewares.testapp-redir.redirectscheme.scheme=https
   - traefik.http.routers.testapp-https.tls=true
-  - traefik.http.routers.testapp-https.tls.certresolver=default
+  - traefik.http.routers.testapp-https.tls.certresolver=letsencrypt
   - traefik.http.services.testapp.loadbalancer.server.port=80
 -- END GENERATED LABELS   --
 ```
@@ -70,6 +90,7 @@ TLS resolver to use: default
 ## For developers
 
 Install all requirements before contributing. This is required for `pre-commit`.
+All requirements for development are given in `requirements.txt`.
 
 Before commiting, install pre-commit hooks for Git by running:
 ```
