@@ -4,6 +4,7 @@
 Generates Traefik labels for use in e.g. Docker containers.
 """
 
+from types import NotImplementedType
 from typing import *
 from util.label import *
 from util.formatter import *
@@ -29,7 +30,7 @@ def has_yaml_extension(path: str) -> bool:
     return False
 
 
-def main() -> None:
+def main() -> Optional[NotImplementedType]:
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Generate Traefik labels")
     parser.add_argument(
@@ -65,7 +66,7 @@ def main() -> None:
     labels: List[str] = []
 
     if args.interactive:
-        assert False, "Interactive mode is not implemented yet"
+        return NotImplemented
         # Initialize readline interface
         HISTORY_FILE = ".laebelmaker_history"
         readline.set_history_length(1000)
@@ -104,6 +105,8 @@ def main() -> None:
     else:
         print("No arguments given.")
         parser.print_help()
+
+    return None
 
 
 if __name__ == "__main__":
