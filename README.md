@@ -1,6 +1,9 @@
 # Laebelmaker
 
-Tool for generating Traefik labels. written in Python.
+![PyPI version](https://img.shields.io/pypi/v/laebelmaker.svg)
+![MIT licence](https://img.shields.io/pypi/l/laebelmaker.svg)
+
+Tool for generating Traefik labels. Written in Python.
 
 ## Installation
 
