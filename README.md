@@ -1,8 +1,10 @@
 # Laebelmaker
 
-![PyPI version](https://img.shields.io/pypi/v/laebelmaker.svg?maxAge=86400)
-![MIT licence](https://img.shields.io/pypi/l/laebelmaker.svg?maxAge=86400)
-![Supported Python versions](https://img.shields.io/pypi/pyversions/laebelmaker.svg?maxAge=86400)
+<a target="_blank" href="https://pypi.org/project/laebelmaker/"><img src="https://img.shields.io/pypi/v/laebelmaker.svg?maxAge=86400&style=flat-square"/></a>
+<a target="_blank" href="https://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/pypi/l/laebelmaker.svg?maxAge=86400&style=flat-square"/></a>
+<a target="_blank" href="https://pypi.org/project/laebelmaker/"><img src="https://img.shields.io/pypi/dm/laebelmaker?style=flat-square"/></a>
+<a target="_blank" href="https://pypi.org/project/laebelmaker/"><img src="https://img.shields.io/pypi/pyversions/laebelmaker.svg?maxAge=86400&style=flat-square"/></a>
+<a target="_blank" href="https://github.com/ivanbratovic/laebelmaker"><img src="https://img.shields.io/github/last-commit/ivanbratovic/laebelmaker?style=flat-square" /></a>
 
 Tool for generating Traefik labels. Written in Python.
 
