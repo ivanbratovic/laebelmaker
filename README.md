@@ -12,13 +12,13 @@ Tool for generating Traefik labels. Written in Python.
 
 Laebelmaker is published on PyPI. You can use pip to install it:
 ```
-pip install laebelmaker
+python3 -m pip install --user laebelmaker
 ```
 
 It is recommended that you also install the `docker` module. You
 can install both Laebelmaker and docker as its dependency with:
 ```
-pip install laebelmaker[docker]
+python3 -m pip install --user laebelmaker[docker]
 ```
 
 ## Usage
