@@ -22,7 +22,7 @@ try:
     import docker
 except ModuleNotFoundError:
     print("Install the docker module for advanced Docker support")
-    docker = False
+    docker = None
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2021, Ivan Bratović"
