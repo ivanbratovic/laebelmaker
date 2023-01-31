@@ -116,6 +116,12 @@ Enter value for 'tls_resolver': letsencrypt
 
 ## For developers
 
+For local development, a virtual environment is highly recommended. The following
+section will assume you installed a virtual environment with the venv module:
+```
+python3 -m venv venv
+```
+
 Install all requirements before contributing. This is required for `pre-commit`.
 All requirements for development are given in `requirements.txt`.
 
@@ -125,3 +131,10 @@ pre-commit install
 ```
 
 This will run Black, MyPy and PyLint before commiting.
+
+You can Laebelmaker package locally in
+[Development Mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html):
+```
+python3 -m pip install -e .
+```
+The package will be installed but will remain editable.
