@@ -132,9 +132,9 @@ pre-commit install
 
 This will run Black, MyPy and PyLint before commiting.
 
-You can Laebelmaker package locally in
+You can install the Laebelmaker project locally in
 [Development Mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html):
 ```
 python3 -m pip install -e .
 ```
-The package will be installed but will remain editable.
+The project will be installed but will remain editable.
