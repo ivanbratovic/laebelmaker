@@ -21,12 +21,8 @@ FORMATS = ["none", "docker", "compose"]
 
 
 def has_yaml_extension(path: str) -> bool:
-    basename = path.split("/")[-1].strip()
-    if basename[-4:].lower() == ".yml":
-        return True
-    if basename[-5:].lower() == ".yaml":
-        return True
-    return False
+    basename = path.strip().split("/")[-1]
+    return basename.lower().endswith(".yaml") or basename.lower().endswith(".yml")
 
 
 def main() -> Optional[NotImplementedType]:
