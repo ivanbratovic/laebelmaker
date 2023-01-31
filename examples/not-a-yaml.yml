@@ -1,0 +1,6 @@
+<Version>3</Version>
+<Services>
+  <TestApp>
+    <Image>foo:latest</Image>
+  </TestApp>
+</Services>

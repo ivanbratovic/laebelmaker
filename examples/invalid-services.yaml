@@ -1,0 +1,5 @@
+version: "3"
+
+sevrices:
+  app:
+    image: foo
