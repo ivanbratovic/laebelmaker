@@ -15,18 +15,24 @@ __author__ = "https://stackoverflow.com/users/3867406/ted"
 
 class Loader:
     def __init__(
-        self, desc: str = "Loading...", end: str = "Done!", timeout: float = 0.125
+        self,
+        desc: str = "Loading...",
+        end: str = "Done!",
+        errend: str = "Failed!",
+        timeout: float = 0.125,
     ) -> None:
         """
         A loader-like context manager
 
         Args:
             desc (str, optional): The loader's description. Defaults to "Loading...".
-            end (str, optional): Final print. Defaults to "Done!".
+            end (str, optional): Final print after loading. Defaults to "Done!".
+            errend (str, optional): Final print in case of error. Defaults to "Failed!".
             timeout (float, optional): Sleep time between prints. Defaults to 0.1.
         """
         self.desc = desc
         self.end = end
+        self.errend = errend
         self.timeout = timeout
 
         self._thread = Thread(target=self._animate, daemon=True)
@@ -46,11 +52,14 @@ class Loader:
     def __enter__(self) -> None:
         self.start()
 
-    def stop(self) -> None:
+    def stop(self, *, error: bool = False) -> None:
         self.done = True
         cols = get_terminal_size((80, 20)).columns
         print("\r" + " " * cols, end="", flush=True)
-        print(f"\r ⠿ {self.end}", flush=True)
+        end: str = self.end
+        if error:
+            end = self.errend
+        print(f"\r ⠿ {end}", flush=True)
 
     def __exit__(
         self,
@@ -59,4 +68,7 @@ class Loader:
         exc_tb: Optional[TracebackType],
     ) -> None:
         # handle exceptions with those variables ^
-        self.stop()
+        if exc_type:
+            self.stop(error=True)
+        else:
+            self.stop()
