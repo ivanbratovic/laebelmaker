@@ -77,9 +77,11 @@ def main() -> Optional[NotImplementedType]:
             if has_yaml_extension(arg):
                 try:
                     labels += gen_label_set_from_compose(arg)
-                except NoInformationException:
-                    print("Unkown YAML file path: ", arg)
-                    raise
+                except FileNotFoundError:
+                    print(f"Unknown YAML file path: {arg!r}")
+                except NoInformationException as e:
+                    print(f"Invalid YAML file: {arg!r}")
+                    print(e)
             else:
                 print("Unkown argument given: ", arg)
 
@@ -88,8 +90,8 @@ def main() -> Optional[NotImplementedType]:
         print(formatter(labels), end="")
         print("-- END GENERATED LABELS   --")
     else:
-        print("No arguments given.")
-        parser.print_help()
+        print("Failed to produce output.")
+        print("Try running: laebelmaker --help")
 
     return None
 

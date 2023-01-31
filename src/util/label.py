@@ -235,15 +235,19 @@ def gen_label_set_from_user(name: str = "") -> List[str]:
     if not name:
         name = input_item("name", str)
     # Get hostname
-    hostname = query_change(name, "hostname")
-    rule = Rule("Host", hostname)
-    config = ServiceConfig(name, rule)
+    hostname: str = query_change(name, "hostname")
+    rule: Rule = Rule("Host", hostname)
+    config: ServiceConfig = ServiceConfig(name, rule)
     return gen_label_set_from_limited_info(config)
 
 
 def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
+    try:
+        exposed_ports: List[str] = attrs["Config"]["ExposedPorts"].keys()
+    except KeyError:
+        print("Could not get ports from docker attributes.")
+        return []
     # Get only TCP exposed ports
-    exposed_ports = attrs["Config"]["ExposedPorts"].keys()
     filtered_ports: List[str] = list(filter(lambda port: "tcp" in port, exposed_ports))
     # Strip the suffix '/tcp' and convert to int
     tcp_ports: List[int] = list(map(int, map(lambda port: port[:-4], filtered_ports)))
@@ -252,10 +256,8 @@ def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
 
 def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[str]:
     # Get port
-    try:
-        ports = get_tcp_ports_from_attrs(attrs)
-    except KeyError:
-        print("Could not get ports from docker attributes.")
+    ports = get_tcp_ports_from_attrs(attrs)
+    if not ports:
         ports = [int(input("Please manually input the port number: "))]
     port = query_selection(ports, "port")
     # Get hostname
@@ -273,7 +275,7 @@ def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
     try:
         container = DOCKER_CLIENT.containers.get(container_name)
     except docker.errors.NotFound:
-        raise NoInformationException("Could not find the info of the given container")
+        raise NoInformationException(f"Invalid container: {container_name!r}")
 
     return gen_label_set_from_docker_attrs(container.attrs, container_name)
 
@@ -286,10 +288,16 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
     except docker.errors.ImageNotFound:
         # TODO: Consider using the Docker Registry HTTP API for getting image data
         print("Pulling image:")
-        with Loader(f"{image_name} Pulling", f"{image_name} Pulled"):
-            DOCKER_CLIENT.images.pull(image_name)
-    finally:
-        image = DOCKER_CLIENT.images.get(image_name)
+        with Loader(
+            f"{image_name} Pulling", f"{image_name} Pulled", f"{image_name} Failed"
+        ):
+            try:
+                DOCKER_CLIENT.images.pull(image_name)
+            except docker.errors.ImageNotFound:
+                raise NoInformationException(f"Invalid docker image: {image_name!r}")
+            except docker.errors.NotFound:
+                raise NoInformationException(f"Invalid image tag: {image_name!r}")
+    image = DOCKER_CLIENT.images.get(image_name)
     base_image_name = image_name.split(":")[0].split("/")[-1]
     if override_name:
         name = override_name
@@ -303,15 +311,20 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         with open(path, "r") as docker_compose:
             data = yaml.safe_load(docker_compose)
     except FileNotFoundError:
-        print(f"Cannot open file {path} for reading.")
+        print(f"Cannot open file {path!r} for reading.")
         raise
+    if not data or not isinstance(data, dict):
+        raise NoInformationException("File does not contain valid YAML.")
     # Get service name
-    possible_services = get_children_keys(data["services"])
-    service_name = query_selection(possible_services, "service")
-    service = data["services"][service_name]
+    try:
+        possible_services = get_children_keys(data["services"])
+    except KeyError:
+        raise NoInformationException("No services defined.")
+    service_name: str = query_selection(possible_services, "service")
     # Get entrypoint names
     try:
-        image_name = service["image"]
+        service_dict: Dict[str, Any] = data["services"][service_name]
+        image_name: str = service_dict["image"]
         if label_set := gen_label_set_from_image(image_name, service_name):
             return label_set
         print(
@@ -320,9 +333,11 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         return gen_label_set_from_user(service_name)
     except KeyError:
         try:
-            build_file = service["build"]
+            build_file = service_dict["build"]
         except KeyError:
             raise NoInformationException(
-                "No image or build information found in service definition"
+                "No image or build information found in service definition."
             )
-        assert False, "Parsing Dockerfile is not implemented yet"
+        raise NotImplementedError("Parsing Dockerfile is not implemented yet")
+    except TypeError:
+        raise NoInformationException(f"Invalid service: {service_name!r}")
