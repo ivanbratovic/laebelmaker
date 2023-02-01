@@ -7,7 +7,11 @@ Generates Traefik labels for use in e.g. Docker containers.
 from types import NotImplementedType
 from typing import *
 from util.label import *
-from util.formatter import *
+from util.formatter import (  # pylint: disable=unused-import
+    formatter_docker,
+    formatter_none,
+    formatter_yaml,
+)
 
 import argparse
 
