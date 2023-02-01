@@ -16,10 +16,10 @@ from util.formatter import (  # pylint: disable=unused-import
 import argparse
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2021, Ivan Bratović"
+__copyright__ = "Copyright 2022, Ivan Bratović"
 __license__ = "MIT"
 
-__version__ = "0.0.1"
+__version__ = "0.2.1"
 
 FORMATS: List[str] = [
     symbol.split("_")[-1] for symbol in globals() if symbol.startswith("format")
