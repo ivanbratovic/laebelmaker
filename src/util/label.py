@@ -183,8 +183,10 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
         print(f"Found multiple {item_name}s.")
         for i, service in enumerate(options):
             print(f" {i+1}. {service}")
-        answer = input(f"Select {item_name} ({default_index + 1}): ")
-        if len(answer) == 0:
+        answer: str = input(
+            f"{item_name.capitalize()} number to use (default {default_index + 1}): "
+        )
+        if not answer:
             selection = default_index
         else:
             selection = int(answer) - 1
