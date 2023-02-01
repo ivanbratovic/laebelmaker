@@ -202,7 +202,7 @@ def query_change(item_orig: Any, item_name: str) -> Any:
     return typ(item_orig)
 
 
-def get_children_keys(d: Dict[str, Any]) -> List[str]:
+def get_keys_as_str(d: Dict[str, Any]) -> List[str]:
     return [str(key) for key in d]
 
 
@@ -317,7 +317,7 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         raise NoInformationException(f"File {path!r} does not contain valid YAML.")
     # Get service name
     try:
-        possible_services = get_children_keys(data["services"])
+        possible_services = get_keys_as_str(data["services"])
     except KeyError:
         raise NoInformationException(f"No services defined in {path!r}.")
     service_name: str = query_selection(possible_services, "service")
