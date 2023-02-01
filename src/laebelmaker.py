@@ -83,7 +83,7 @@ def main() -> Optional[NotImplementedType]:
                     print(f"Invalid YAML file: {arg!r}")
                     print(e)
             else:
-                print("Unkown argument given: ", arg)
+                print(f"Unkown argument given: {arg!r}")
 
     if labels:
         print("-- START GENERATED LABELS --")
