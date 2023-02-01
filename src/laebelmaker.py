@@ -21,7 +21,9 @@ __license__ = "MIT"
 
 __version__ = "0.0.1"
 
-FORMATS = ["none", "docker", "yaml"]
+FORMATS: List[str] = [
+    symbol.split("_")[-1] for symbol in globals() if symbol.startswith("format")
+]
 
 
 def has_yaml_extension(path: str) -> bool:
