@@ -54,7 +54,7 @@ formatter_docker: Callable[[List[str]], str] = LabelFormatter(
 ).format
 
 """Creates a YAML list of Docker Compose labels"""
-formatter_compose: Callable[[List[str]], str] = LabelFormatter(
+formatter_yaml: Callable[[List[str]], str] = LabelFormatter(
     formatter=lambda x: "  - " + x,
     sep="\n",
 ).format

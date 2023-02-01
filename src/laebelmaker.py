@@ -17,7 +17,7 @@ __license__ = "MIT"
 
 __version__ = "0.0.1"
 
-FORMATS = ["none", "docker", "compose"]
+FORMATS = ["none", "docker", "yaml"]
 
 
 def has_yaml_extension(path: str) -> bool:
