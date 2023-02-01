@@ -163,17 +163,18 @@ def input_prefilled(prompt: str, text: str) -> str:
     return result
 
 
-def input_item(name: str, type: type) -> Any:
-    if type == int:
+def input_item(name: str, typ: type) -> Any:
+    if typ == int:
         hint_text = " (integer)"
-    elif type == bool:
-        hint_text = " (yes/no)"
+    elif typ == bool:
+        hint_text = " (yes/No)"
     else:
         hint_text = ""
-    new_value = input(f"Enter value for '{name}'{hint_text}: ")
-    if type == bool and new_value.lower() in ("false", "no", "0"):
-        new_value = ""
-    return type(new_value)
+    new_value: str = input(f"Enter value for {name!r}{hint_text}: ")
+    if typ == bool:
+        if new_value.lower() not in ("true", "yes", "1", "y"):
+            new_value = ""
+    return typ(new_value)
 
 
 def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
