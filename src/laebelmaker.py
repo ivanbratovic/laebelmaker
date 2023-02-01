@@ -86,7 +86,6 @@ def main() -> Optional[NotImplementedType]:
                 except FileNotFoundError:
                     print(f"Unknown YAML file path: {arg!r}")
                 except NoInformationException as e:
-                    print(f"Invalid YAML file: {arg!r}")
                     print(e)
             else:
                 print(f"Unkown argument given: {arg!r}")

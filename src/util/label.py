@@ -297,12 +297,7 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
         with Loader(
             f"{image_name} Pulling", f"{image_name} Pulled", f"{image_name} Failed"
         ):
-            try:
-                DOCKER_CLIENT.images.pull(image_name)
-            except docker.errors.ImageNotFound:
-                raise NoInformationException(f"Invalid docker image: {image_name!r}")
-            except docker.errors.NotFound:
-                raise NoInformationException(f"Invalid image tag: {image_name!r}")
+            DOCKER_CLIENT.images.pull(image_name)
     image = DOCKER_CLIENT.images.get(image_name)
     base_image_name = image_name.split(":")[0].split("/")[-1]
     if override_name:
@@ -320,19 +315,28 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         print(f"Cannot open file {path!r} for reading.")
         raise
     if not data or not isinstance(data, dict):
-        raise NoInformationException("File does not contain valid YAML.")
+        raise NoInformationException(f"File {path!r} does not contain valid YAML.")
     # Get service name
     try:
         possible_services = get_children_keys(data["services"])
     except KeyError:
-        raise NoInformationException("No services defined.")
+        raise NoInformationException(f"No services defined in {path!r}.")
     service_name: str = query_selection(possible_services, "service")
     # Get entrypoint names
     try:
         service_dict: Dict[str, Any] = data["services"][service_name]
         image_name: str = service_dict["image"]
-        if label_set := gen_label_set_from_image(image_name, service_name):
-            return label_set
+        try:
+            if label_set := gen_label_set_from_image(image_name, service_name):
+                return label_set
+        except docker.errors.ImageNotFound:
+            raise NoInformationException(
+                f"Invalid docker image: {image_name!r} in {path!r}."
+            )
+        except docker.errors.NotFound:
+            raise NoInformationException(
+                f"Invalid image tag: {image_name!r} in {path!r}."
+            )
         print(
             "The docker module is not installed. We'll have to query some information from you..."
         )
@@ -342,8 +346,8 @@ def gen_label_set_from_compose(path: str) -> List[str]:
             build_file = service_dict["build"]
         except KeyError:
             raise NoInformationException(
-                "No image or build information found in service definition."
+                f"No image or build information found in service definition in {path!r}."
             )
         raise NotImplementedError("Parsing Dockerfile is not implemented yet")
     except TypeError:
-        raise NoInformationException(f"Invalid service: {service_name!r}")
+        raise NoInformationException(f"Invalid service: {service_name!r} in {path!r}")
