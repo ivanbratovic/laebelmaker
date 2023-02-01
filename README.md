@@ -44,7 +44,7 @@ options:
   -c NAME, --container NAME
                         generate labels for a given container on the system
   -f FORMAT, --format FORMAT
-                        set output format, one of: [none, docker, compose]
+                        set output format, one of: [none, docker, yaml]
 ```
 
 ## Examples
@@ -70,11 +70,11 @@ traefik.http.services.testapp.loadbalancer.server.port=25565
 Invoking laebelmaker on a Docker Compose YAML file, the program will
 prompt the user for different options, with the defaults given in
 parentheses. This example also modifies the output format with
-`-f compose`, which means the labels are immediately ready to be used
+`-f yaml`, which means the labels are immediately ready to be used
 in a YAML file.
 
 ```
-$ laebelmaker -d examples/docker-compose-testapp.yml -f compose
+$ laebelmaker -d examples/docker-compose-testapp.yml -f yaml
 Found multiple services.
  1. testapp
  2. testapp-db
