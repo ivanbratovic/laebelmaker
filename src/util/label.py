@@ -177,32 +177,29 @@ def input_item(name: str, typ: type) -> Any:
 
 
 def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
-    if len(options) < 1:
+    if len(options) == 0:
         raise NoInformationException(f"No {item_name} choices given.")
-    if len(options) > 1:
-        print(f"Found multiple {item_name}s.")
-        for i, service in enumerate(options):
-            print(f" {i+1}. {service}")
-        answer: str = input(
-            f"{item_name.capitalize()} number to use (default {default_index + 1}): "
-        )
-        if not answer:
-            selection = default_index
-        else:
-            selection = int(answer) - 1
-        assert selection in range(0, len(options)), "Selected index out of range"
-        selected = options[selection]
-    else:
-        selected = options[0]
-    return selected
+    if len(options) == 1:
+        return options[0]
+    print(f"Found multiple {item_name}s.")
+    for i, service in enumerate(options):
+        print(f" {i+1}. {service}")
+    answer: str = input(
+        f"{item_name.capitalize()} number to use (default {default_index + 1}): "
+    )
+    selection: int = default_index
+    if answer:
+        selection = int(answer) - 1
+    assert selection in range(len(options)), "Selected index out of range"
+    return options[selection]
 
 
-def query_change(item: Any, item_name: str) -> Any:
-    typ = type(item)
-    answer = input_prefilled(f"Enter new value for '{item_name}': ", item)
-    if len(answer) != 0:
-        item = answer
-    return typ(item)
+def query_change(item_orig: Any, item_name: str) -> Any:
+    typ: type = type(item_orig)
+    answer = input_prefilled(f"Enter new value for '{item_name}': ", item_orig)
+    if answer:
+        return typ(answer)
+    return typ(item_orig)
 
 
 def get_children_keys(d: Dict[str, Any]) -> List[str]:
@@ -291,6 +288,7 @@ def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
 def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[str]:
     if not docker:
         return []
+
     try:
         DOCKER_CLIENT.images.get(image_name)
     except docker.errors.ImageNotFound:
@@ -302,10 +300,9 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
             DOCKER_CLIENT.images.pull(image_name)
     image = DOCKER_CLIENT.images.get(image_name)
     base_image_name = image_name.split(":")[0].split("/")[-1]
+    name: str = base_image_name
     if override_name:
         name = override_name
-    else:
-        name = base_image_name
     return gen_label_set_from_docker_attrs(image.attrs, name)
 
 
