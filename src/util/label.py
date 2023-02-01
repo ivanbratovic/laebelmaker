@@ -225,7 +225,13 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
         typ = type(config.__getattribute__(key))
 
         if not value:
-            new_value = input_item(key, typ)
+            new_value: Optional[Any] = None
+            while True:
+                new_value = input_item(key, typ)
+                if new_value == "":
+                    print(f"Input of {key!r} is mandatory.")
+                else:
+                    break
             config.__setattr__(key, new_value)
         else:
             config.__setattr__(key, typ(query_change(value, key)))
