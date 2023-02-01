@@ -7,7 +7,7 @@ Label:
 Represents a string made up of tokens separated by
 a delimiter with an assignment operator.
 
-e.g. '{traefik.http.routers}.my_router.rule=Host(`www.hr`)'
+e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 
 """
 
