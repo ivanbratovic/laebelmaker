@@ -54,7 +54,9 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
 
 def query_change(item_orig: Any, item_name: str) -> Any:
     typ: type = type(item_orig)
-    answer = input_prefilled(f"Enter new value for '{item_name}': ", item_orig)
+    answer = input_prefilled(
+        f"Enter new value for '{item_name.replace('_', ' ')}': ", item_orig
+    )
     if answer:
         return typ(answer)
     return typ(item_orig)
