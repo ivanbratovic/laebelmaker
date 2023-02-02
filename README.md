@@ -20,6 +20,9 @@ can install both Laebelmaker and docker as its dependency with:
 ```
 python3 -m pip install --user laebelmaker[docker]
 ```
+This will allow Laebelmaker to use metadata of Docker images
+to prevent redundant prompts from the user, e.g. when an image
+exposes a single port.
 
 ## Usage
 
