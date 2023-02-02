@@ -7,6 +7,7 @@ Generates Traefik labels for use in e.g. Docker containers.
 from types import NotImplementedType
 from typing import *
 from util.label import *
+from util.errors import NoInformationException
 from util.formatter import (  # pylint: disable=unused-import
     formatter_docker,
     formatter_none,
@@ -41,12 +42,6 @@ def main() -> Optional[NotImplementedType]:
         help="use interactive mode",
     )
     parser.add_argument(
-        "-d",
-        "--docker-compose",
-        metavar="FILE",
-        help="generate labels from a given Compose file",
-    )
-    parser.add_argument(
         "-c",
         "--container",
         metavar="NAME",
@@ -60,6 +55,12 @@ def main() -> Optional[NotImplementedType]:
         choices=FORMATS,
         default="none",
     )
+    parser.add_argument(
+        "files",
+        metavar="FILES",
+        nargs="*",
+        help="list of Compose files to generate labels for",
+    )
 
     args, unknownargs = parser.parse_known_args()
 
@@ -68,27 +69,22 @@ def main() -> Optional[NotImplementedType]:
 
     if args.interactive:
         labels = gen_label_set_from_user("")
-    elif args.docker_compose:
-        try:
-            labels += gen_label_set_from_compose(args.docker_compose)
-        except NoInformationException:
-            print("Invalid docker-compose file given.")
     elif args.container:
         try:
             labels += gen_label_set_from_container(args.container)
         except NoInformationException:
             print("Invalid container identifier given.")
-    if unknownargs:
-        for arg in unknownargs:
-            if has_yaml_extension(arg):
-                try:
-                    labels += gen_label_set_from_compose(arg)
-                except FileNotFoundError:
-                    print(f"Unknown YAML file path: {arg!r}")
-                except NoInformationException as e:
-                    print(e)
-            else:
-                print(f"Unkown argument given: {arg!r}")
+    elif args.files:
+        for arg in args.files:
+            try:
+                labels += gen_label_set_from_compose(arg)
+            except FileNotFoundError:
+                print(f"Unknown file path: {arg!r}")
+            except NoInformationException as e:
+                print(e)
+    else:
+        parser.print_help()
+        return None
 
     if labels:
         print("-- START GENERATED LABELS --")
