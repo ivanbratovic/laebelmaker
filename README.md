@@ -99,16 +99,27 @@ Enter value for 'tls resolver': letsencrypt
 -- END GENERATED LABELS   --
 ```
 
+If an invalid file is given, Laebelmaker should hopefully print a
+sensible error message.
+```
+$ laebelmaker examples/invalid-image-tag.yml
+Pulling image:
+ ⠿ ubuntu:latestest Failed
+Invalid image tag: 'ubuntu:latestest' in 'examples/invalid-image-tag.yml'.
+Failed to produce output.
+Try running: laebelmaker --help
+```
+
 ## To-do
 
 * [x] Generate Traefik labels using an interactive CLI
 * [x] Generate Traefik labels using command-line options
 * [x] Generate labels from existing service definitions (e.g. Docker Compose YAML files)
 * [x] Learn how to and publish this project to PyPi
+* [x] Add combined Rule types (with logical operators)
 * [ ] Add more data sources
 * [ ] Add more Rule types
-* [ ] Add combined Rule types (with logical operators)
-* [ ] Compatibility for Windows machines
+* [ ] MAYBE: Compatibility for Windows machines
 
 ## Guidelines for development
 
