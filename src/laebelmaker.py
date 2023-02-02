@@ -70,7 +70,10 @@ def main() -> Optional[NotImplementedType]:
     labels: List[str] = []
 
     if args.interactive:
-        labels = gen_label_set_from_user("")
+        try:
+            labels = gen_label_set_from_user("")
+        except NoInformationException as e:
+            print(e)
     elif args.container:
         try:
             labels += gen_label_set_from_container(args.container)
