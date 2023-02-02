@@ -56,7 +56,7 @@ class Rule:
         return f"{self.typ}({content})"
 
 
-class CombinedRule:
+class CombinedRule(Rule):
     """
     Represents a combined Traefik HTTP Router rule by wrapping multiple
     simple rules.
@@ -67,10 +67,12 @@ class CombinedRule:
         self.rules: List[Rule] = []
 
         for arg in args:
-            if type(arg) is str:
+            if isinstance(arg, str):
                 self.operators.append(arg)
-            if type(arg) is Rule:
+            elif isinstance(arg, Rule):
                 self.rules.append(arg)
+            else:
+                raise TypeError("CombinedRule args must be either strings or Rules")
 
     def __str__(self) -> str:
         full_rule: str = str(self.rules[0])
