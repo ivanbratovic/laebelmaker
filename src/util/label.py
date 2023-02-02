@@ -14,8 +14,9 @@ e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 from typing import *
 from dataclasses import dataclass, asdict
 from util.loader import Loader
+from util.input import input_item, query_selection, query_change
+from util.errors import NoInformationException, UnknownRuleTypeException
 import yaml
-import readline
 
 try:
     import docker
@@ -24,7 +25,7 @@ except ModuleNotFoundError:
     docker = None
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2021, Ivan Bratović"
+__copyright__ = "Copyright 2022, Ivan Bratović"
 __license__ = "MIT"
 
 
@@ -32,14 +33,6 @@ ROUTER_PREFIX = "traefik.http.routers"
 SERVICE_PREFIX = "traefik.http.services"
 if docker:
     DOCKER_CLIENT = docker.from_env()
-
-
-class UnknownRuleTypeException(Exception):
-    """A Traefik rule tried to be created with an unkown type"""
-
-
-class NoInformationException(Exception):
-    """Laebelmaker cannot continue running due to lack of information"""
 
 
 class Rule:
@@ -149,61 +142,6 @@ def gen_simple_label_set_for_service(
             f"{SERVICE_PREFIX}.{service_name}.loadbalancer.server.port={port}"
         )
     return label_set
-
-
-def input_prefilled(prompt: str, text: str) -> str:
-    def hook() -> None:
-        readline.insert_text(text)
-        readline.redisplay()
-
-    readline.set_pre_input_hook(hook)
-    result = input(prompt)
-    readline.set_pre_input_hook()
-    return result
-
-
-def input_item(name: str, typ: type) -> Any:
-    if typ == int:
-        hint_text = " (integer)"
-    elif typ == bool:
-        hint_text = " (yes/No)"
-    else:
-        hint_text = ""
-    new_value: str = input(f"Enter value for {name.replace('_', ' ')!r}{hint_text}: ")
-    if typ == bool:
-        if new_value.lower() not in ("true", "yes", "1", "y"):
-            new_value = ""
-    return typ(new_value)
-
-
-def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
-    if len(options) == 0:
-        raise NoInformationException(f"No {item_name} choices given.")
-    if len(options) == 1:
-        return options[0]
-    print(f"Found multiple {item_name}s.")
-    for i, service in enumerate(options):
-        print(f" {i+1}. {service}")
-    answer: str = input(
-        f"{item_name.capitalize()} number to use (default {default_index + 1}): "
-    )
-    selection: int = default_index
-    if answer:
-        selection = int(answer) - 1
-    assert selection in range(len(options)), "Selected index out of range"
-    return options[selection]
-
-
-def query_change(item_orig: Any, item_name: str) -> Any:
-    typ: type = type(item_orig)
-    answer = input_prefilled(f"Enter new value for '{item_name}': ", item_orig)
-    if answer:
-        return typ(answer)
-    return typ(item_orig)
-
-
-def get_keys_as_str(d: Dict[str, Any]) -> List[str]:
-    return [str(key) for key in d]
 
 
 def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
@@ -317,7 +255,7 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         raise NoInformationException(f"File {path!r} does not contain valid YAML.")
     # Get service name
     try:
-        possible_services = get_keys_as_str(data["services"])
+        possible_services = [str(service) for service in data["services"]]
     except KeyError:
         raise NoInformationException(f"No services defined in {path!r}.")
     service_name: str = query_selection(possible_services, "service")
