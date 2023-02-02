@@ -33,6 +33,8 @@ def has_yaml_extension(path: str) -> bool:
 
 
 def main() -> Optional[NotImplementedType]:
+    args: Optional[argparse.Namespace] = None
+    parser: Optional[argparse.ArgumentParser] = None
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Generate Traefik labels")
     parser.add_argument(
@@ -62,7 +64,7 @@ def main() -> Optional[NotImplementedType]:
         help="list of Compose files to generate labels for",
     )
 
-    args, unknownargs = parser.parse_known_args()
+    args, _ = parser.parse_known_args()
 
     formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
     labels: List[str] = []
