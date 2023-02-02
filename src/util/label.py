@@ -169,7 +169,7 @@ def input_item(name: str, typ: type) -> Any:
         hint_text = " (yes/No)"
     else:
         hint_text = ""
-    new_value: str = input(f"Enter value for {name!r}{hint_text}: ")
+    new_value: str = input(f"Enter value for {name.replace('_', ' ')!r}{hint_text}: ")
     if typ == bool:
         if new_value.lower() not in ("true", "yes", "1", "y"):
             new_value = ""
