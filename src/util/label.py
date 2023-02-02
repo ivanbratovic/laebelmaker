@@ -93,10 +93,10 @@ class ServiceConfig:
     Contains all data neccessary to generate required labels
     """
 
-    name: str
+    deploy_name: str
     rule: Rule
     port: int = -1
-    https_redir: bool = False
+    https_redirection: bool = False
     web_entrypoint: str = "web"
     websecure_entrypoint: str = "websecure"
     tls_resolver: str = ""
@@ -112,11 +112,11 @@ def gen_simple_label_set_for_service(
     label_set = []
     if enable:
         label_set.append(traefik_enable())
-    service_name: str = config.name
+    service_name: str = config.deploy_name
     # Traefik router
     rule: Rule = config.rule
     label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
-    if config.https_redir:
+    if config.https_redirection:
         # HTTPS router
         label_set.append(
             f"{ROUTER_PREFIX}.{service_name}.entrypoints={config.web_entrypoint}"
@@ -208,12 +208,12 @@ def get_keys_as_str(d: Dict[str, Any]) -> List[str]:
 
 def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
     for key, value in asdict(config).items():
-        if key in ("name", "rule"):
+        if key in ("deploy_name", "rule"):
             continue
 
         if (
             key in ("tls_resolver", "web_entrypoint", "websecure_entrypoint")
-            and not config.https_redir
+            and not config.https_redirection
         ):
             continue
 
@@ -238,7 +238,7 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
 
 def gen_label_set_from_user(name: str = "") -> List[str]:
     if not name:
-        name = input_item("name", str)
+        name = input_item("deploy_name", str)
     # Get hostname
     hostname: str = query_change(name, "hostname")
     rule: Rule = Rule("Host", hostname)
@@ -268,7 +268,7 @@ def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[st
     # Get hostname
     hostname = query_change(name, "hostname")
     # Generate config
-    config = ServiceConfig(name=name, rule=Rule("Host", hostname), port=port)
+    config = ServiceConfig(name, rule=Rule("Host", hostname), port=port)
 
     return gen_label_set_from_limited_info(config)
 
