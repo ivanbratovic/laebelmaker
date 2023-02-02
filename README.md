@@ -31,35 +31,36 @@ You can always consult the help menu for all features with short
 (and hopefully clear) explanations:
 
 ```
-$ laebelmaker -h
-usage: laebelmaker [-h] [-i] [-d FILE] [-c NAME] [-f FORMAT]
+$ laebelmaker
+usage: laebelmaker [-h] [-i] [-c NAME] [-f FORMAT] [FILES ...]
 
 Generate Traefik labels
+
+positional arguments:
+  FILES                 list of Compose files to generate labels for
 
 options:
   -h, --help            show this help message and exit
   -i, --interactive     use interactive mode
-  -d FILE, --docker-compose FILE
-                        generate labels from a given Compose file
   -c NAME, --container NAME
                         generate labels for a given container on the system
   -f FORMAT, --format FORMAT
-                        set output format, one of: [none, docker, yaml]
+                        set output format, one of: [docker, none, yaml]
 ```
 
 ## Examples
 
-### GUI Interactive Mode
+### CLI Interactive Mode
 
 ```
 $ laebelmaker -i
-Enter value for 'name': testapp
-Enter new value for 'hostname': test
+Enter value for 'deploy name': testapp
+Enter new value for 'hostname and context path': test/traefik
 Enter new value for 'port': 25565
-Enter value for 'https_redir' (yes/no): no
+Enter value for 'https redirection' (yes/No): no
 -- START GENERATED LABELS --
 traefik.enable=true
-traefik.http.routers.testapp.rule=Host(`test`)
+traefik.http.routers.testapp.rule=Host(`test`) && Path(`/traefik`)
 traefik.http.services.testapp.loadbalancer.server.port=25565
 -- END GENERATED LABELS   --
 ```
@@ -74,16 +75,16 @@ parentheses. This example also modifies the output format with
 in a YAML file.
 
 ```
-$ laebelmaker -d examples/docker-compose-testapp.yml -f yaml
+$ laebelmaker -f yaml examples/docker-compose-testapp.yml
 Found multiple services.
  1. testapp
  2. testapp-db
-Select service (1): 1
+Service number to use (default 1): 1
 Enter new value for 'hostname': testapp-customname
-Enter value for 'https_redir' (yes/no): yes
-Enter new value for 'web_entrypoint': http
-Enter new value for 'websecure_entrypoint': https
-Enter value for 'tls_resolver': letsencrypt
+Enter value for 'https redirection' (yes/No): yes
+Enter new value for 'web entrypoint': http
+Enter new value for 'websecure entrypoint': https
+Enter value for 'tls resolver': letsencrypt
 -- START GENERATED LABELS --
   - traefik.enable=true
   - traefik.http.routers.testapp.rule=Host(`testapp-customname`)
