@@ -179,9 +179,24 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
 def gen_label_set_from_user(name: str = "") -> List[str]:
     if not name:
         name = input_item("deploy_name", str)
-    # Get hostname
-    hostname: str = query_change(name, "hostname")
-    rule: Rule = Rule("Host", hostname)
+    # Create appropriate Rule object
+    url: str = query_change(name, "hostname and context path")
+    url_parts: List[str] = url.split("/")
+    if len(url_parts) == 1:  # Domain OR Context-Path
+        rule = Rule("Host", url)
+    elif len(url_parts) == 2:  # Domain & Context-Path
+        [domain, path] = url_parts
+        domain_rule: Rule = Rule("Host", domain)
+        context_rule: Rule = Rule("Path", f"/{path}")
+        if domain and path:
+            rule = CombinedRule(domain_rule, "&&", context_rule)
+        elif domain:
+            rule = domain_rule
+        elif path:
+            rule = context_rule
+        else:
+            raise NoInformationException("Invalid hostname and context path definition")
+
     config: ServiceConfig = ServiceConfig(name, rule)
     return gen_label_set_from_limited_info(config)
 
