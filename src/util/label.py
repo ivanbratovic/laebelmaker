@@ -262,12 +262,8 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
 
 
 def gen_label_set_from_compose(path: str) -> List[str]:
-    try:
-        with open(path, "r") as docker_compose:
-            data = yaml.safe_load(docker_compose)
-    except FileNotFoundError:
-        print(f"Cannot open file {path!r} for reading.")
-        raise
+    with open(path, "r") as docker_compose:
+        data = yaml.safe_load(docker_compose)
     if not data or not isinstance(data, dict):
         raise NoInformationException(f"File {path!r} does not contain valid YAML.")
     # Get service name
