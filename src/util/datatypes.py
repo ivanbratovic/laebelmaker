@@ -10,7 +10,7 @@ class Rule:
     Represents a Traefik HTTP Router rule
     """
 
-    ALLOWED_RULES = ("Host", "Path", "Headers")
+    ALLOWED_RULES = ("Host", "Path", "PathPrefix", "Headers")
 
     def __init__(self, t: str, *content: str) -> None:
         if t not in self.ALLOWED_RULES:

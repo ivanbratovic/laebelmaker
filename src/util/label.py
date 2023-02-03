@@ -126,7 +126,7 @@ def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
     elif len(url_parts) == 2:  # Domain & Context-Path
         [domain, path] = url_parts
         domain_rule: Rule = Rule("Host", domain)
-        context_rule: Rule = Rule("Path", f"/{path}")
+        context_rule: Rule = Rule("PathPrefix", f"/{path}")
         if domain and path:
             rule = CombinedRule(domain_rule, "&&", context_rule)
         elif domain:
