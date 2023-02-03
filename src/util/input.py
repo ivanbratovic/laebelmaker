@@ -9,7 +9,7 @@ __copyright__ = "Copyright 2022, Ivan Bratović"
 __license__ = "MIT"
 
 
-def input_prefilled(prompt: str, text: str) -> str:
+def input_prefilled(prompt: str, text: str = "") -> str:
     def hook() -> None:
         readline.insert_text(text)
         readline.redisplay()
@@ -20,18 +20,22 @@ def input_prefilled(prompt: str, text: str) -> str:
     return result
 
 
-def input_item(name: str, typ: type) -> Any:
+def input_item(name: str, typ: type, item_orig: Optional[Any] = None) -> Any:
     if typ == int:
         hint_text = " (integer)"
+
     elif typ == bool:
         hint_text = " (yes/No)"
     else:
         hint_text = ""
-    new_value: str = input(f"Enter value for {name.replace('_', ' ')!r}{hint_text}: ")
+    new_value: str = input_prefilled(
+        f"Enter value for {name.replace('_', ' ')!r}{hint_text}: ",
+        str(item_orig) if item_orig else "",
+    )
     if typ == bool:
         if new_value.lower() not in ("true", "yes", "1", "y"):
             new_value = ""
-    return typ(new_value)
+    return typ(new_value if new_value else False)
 
 
 def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
@@ -54,9 +58,4 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
 
 def query_change(item_orig: Any, item_name: str) -> Any:
     typ: type = type(item_orig)
-    answer = input_prefilled(
-        f"Enter new value for '{item_name.replace('_', ' ')}': ", item_orig
-    )
-    if answer:
-        return typ(answer)
-    return typ(item_orig)
+    return input_item(item_name, typ, item_orig)

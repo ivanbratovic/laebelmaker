@@ -157,7 +157,7 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[st
         ):
             continue
 
-        if key == "port" and config.port != -1:
+        if key == "port" and config.port:
             continue
 
         typ = type(config.__getattribute__(key))
