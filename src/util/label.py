@@ -11,7 +11,7 @@ e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 
 """
 
-from typing import *
+from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
 from util.datatypes import ServiceConfig, Rule, CombinedRule
 from util.loader import Loader
