@@ -5,8 +5,12 @@ Generates Traefik labels for use in e.g. Docker containers.
 """
 
 from types import NotImplementedType
-from typing import *
-from util.label import *
+from typing import Optional, List, Tuple, Callable
+from util.label import (
+    gen_label_set_from_user,
+    gen_label_set_from_compose,
+    gen_label_set_from_container,
+)
 from util.errors import NoInformationException
 from util.formatter import (  # pylint: disable=unused-import
     formatter_docker,
