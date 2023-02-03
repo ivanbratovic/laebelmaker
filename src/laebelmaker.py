@@ -67,22 +67,22 @@ def main() -> Optional[NotImplementedType]:
     args, _ = parser.parse_known_args()
 
     formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
-    labels: List[str] = []
+    labels: List[Tuple[str, List[str]]] = []
 
     if args.interactive:
         try:
-            labels = gen_label_set_from_user("")
+            labels = [gen_label_set_from_user("")]
         except NoInformationException as e:
             print(e)
-    elif args.container:
+    elif container := args.container:
         try:
-            labels += gen_label_set_from_container(args.container)
+            labels = [gen_label_set_from_container(container)]
         except NoInformationException:
-            print("Invalid container identifier given.")
+            print(f"Invalid container identifier given: {container!r}.")
     elif args.files:
         for arg in args.files:
             try:
-                labels += gen_label_set_from_compose(arg)
+                labels.append(gen_label_set_from_compose(arg))
             except FileNotFoundError:
                 print(f"Unknown file path: {arg!r}")
             except NoInformationException as e:
@@ -92,9 +92,10 @@ def main() -> Optional[NotImplementedType]:
         return None
 
     if labels:
-        print("-- START GENERATED LABELS --")
-        print(formatter(labels), end="")
-        print("-- END GENERATED LABELS   --")
+        for title, label_list in labels:
+            print(f"--START GENERATED LABELS FOR {title!r}--")
+            print(formatter(label_list), end="")
+            print(f"--END GENERATED LABELS FOR {title!r}--")
     else:
         print("Failed to produce output.")
         print("Try running: laebelmaker --help")

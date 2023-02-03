@@ -103,8 +103,8 @@ def traefik_enable() -> str:
 
 def gen_simple_label_set_for_service(
     config: ServiceConfig, enable: bool = True
-) -> List[str]:
-    label_set = []
+) -> Tuple[str, List[str]]:
+    label_set: List[str] = []
     if enable:
         label_set.append(traefik_enable())
     service_name: str = config.deploy_name
@@ -143,10 +143,10 @@ def gen_simple_label_set_for_service(
         label_set.append(
             f"{SERVICE_PREFIX}.{service_name}.loadbalancer.server.port={port}"
         )
-    return label_set
+    return config.deploy_name, label_set
 
 
-def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
+def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[str]]:
     for key, value in asdict(config).items():
         if key in ("deploy_name", "rule"):
             continue
@@ -176,7 +176,7 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> List[str]:
     return gen_simple_label_set_for_service(config)
 
 
-def gen_label_set_from_user(name: str = "") -> List[str]:
+def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
     if not name:
         name = input_item("deploy_name", str)
     # Create appropriate Rule object
@@ -214,7 +214,9 @@ def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
     return tcp_ports
 
 
-def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[str]:
+def gen_label_set_from_docker_attrs(
+    attrs: Dict[str, Any], name: str
+) -> Tuple[str, List[str]]:
     # Get port
     ports = get_tcp_ports_from_attrs(attrs)
     if not ports:
@@ -228,9 +230,9 @@ def gen_label_set_from_docker_attrs(attrs: Dict[str, Any], name: str) -> List[st
     return gen_label_set_from_limited_info(config)
 
 
-def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
+def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
     if not docker:
-        return []
+        return ("", [])
 
     try:
         container = DOCKER_CLIENT.containers.get(container_name)
@@ -240,9 +242,11 @@ def gen_label_set_from_container(container_name: str) -> List[str] | NoReturn:
     return gen_label_set_from_docker_attrs(container.attrs, container_name)
 
 
-def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[str]:
+def gen_label_set_from_image(
+    image_name: str, override_name: str = ""
+) -> Tuple[str, List[str]]:
     if not docker:
-        return []
+        return ("", [])
 
     try:
         DOCKER_CLIENT.images.get(image_name)
@@ -261,7 +265,7 @@ def gen_label_set_from_image(image_name: str, override_name: str = "") -> List[s
     return gen_label_set_from_docker_attrs(image.attrs, name)
 
 
-def gen_label_set_from_compose(path: str) -> List[str]:
+def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     with open(path, "r") as docker_compose:
         data = yaml.safe_load(docker_compose)
     if not data or not isinstance(data, dict):
@@ -277,8 +281,9 @@ def gen_label_set_from_compose(path: str) -> List[str]:
         service_dict: Dict[str, Any] = data["services"][service_name]
         image_name: str = service_dict["image"]
         try:
-            if label_set := gen_label_set_from_image(image_name, service_name):
-                return label_set
+            title, label_set = gen_label_set_from_image(image_name, service_name)
+            if label_set:
+                return title, label_set
         except docker.errors.ImageNotFound:
             raise NoInformationException(
                 f"Invalid docker image: {image_name!r} in {path!r}."
