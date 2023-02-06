@@ -48,7 +48,8 @@ def gen_simple_label_set_for_service(
         label_set.append(traefik_enable())
     service_name: str = config.deploy_name
     # Traefik router
-    rule: Rule = config.rule
+    rule: Optional[Rule] = config.rule
+    assert rule, "config.rule should not be None"
     label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
     if config.https_redirection:
         # HTTPS router
@@ -86,57 +87,70 @@ def gen_simple_label_set_for_service(
 
 
 def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[str]]:
+    https_related_keys: List[str] = [
+        "tls_resolver",
+        "web_entrypoint",
+        "websecure_entrypoint",
+    ]
+    keys_with_default_value_name: List[str] = ["url"]
     for key, value in asdict(config).items():
         if key in ("deploy_name", "rule"):
             continue
 
-        if (
-            key in ("tls_resolver", "web_entrypoint", "websecure_entrypoint")
-            and not config.https_redirection
-        ):
+        if key in https_related_keys and not config.https_redirection:
             continue
 
         if key == "port" and config.port:
             continue
 
+        default_value: Optional[str] = None
+        if key in keys_with_default_value_name:
+            default_value = config.deploy_name
+
         typ = type(config.__getattribute__(key))
 
         if not value:
             new_value: Optional[Any] = None
+
             while True:
-                new_value = input_item(key, typ)
+                new_value = input_item(key, typ, default_value)
                 if new_value == "":
                     print(f"Input of {key!r} is mandatory.")
                 else:
                     break
             config.__setattr__(key, new_value)
         else:
-            config.__setattr__(key, typ(query_change(value, key)))
+            config.__setattr__(key, query_change(value, key))
+
+        if key == "url":
+            url_parts: List[str] = config.url.split("/")
+            rule: Optional[Rule] = None
+            if len(url_parts) == 1:  # Domain OR Context-Path
+                rule = Rule("Host", config.url)
+            elif len(url_parts) == 2:  # Domain & Context-Path
+                [domain, path] = url_parts
+                domain_rule: Rule = Rule("Host", domain)
+                context_rule: Rule = Rule("PathPrefix", f"/{path}")
+                if domain and path:
+                    rule = CombinedRule(domain_rule, "&&", context_rule)
+                elif domain:
+                    rule = domain_rule
+                elif path:
+                    rule = context_rule
+                else:
+                    raise NoInformationException(
+                        "Invalid hostname and context path definition"
+                    )
+            config.rule = rule
+
     return gen_simple_label_set_for_service(config)
 
 
 def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
     if not name:
         name = input_item("deploy_name", str)
-    # Create appropriate Rule object
-    url: str = query_change(name, "hostname and context path")
-    url_parts: List[str] = url.split("/")
-    if len(url_parts) == 1:  # Domain OR Context-Path
-        rule = Rule("Host", url)
-    elif len(url_parts) == 2:  # Domain & Context-Path
-        [domain, path] = url_parts
-        domain_rule: Rule = Rule("Host", domain)
-        context_rule: Rule = Rule("PathPrefix", f"/{path}")
-        if domain and path:
-            rule = CombinedRule(domain_rule, "&&", context_rule)
-        elif domain:
-            rule = domain_rule
-        elif path:
-            rule = context_rule
-        else:
-            raise NoInformationException("Invalid hostname and context path definition")
-
-    config: ServiceConfig = ServiceConfig(name, rule)
+    # Get URL
+    config: ServiceConfig = ServiceConfig(name)
     return gen_label_set_from_limited_info(config)
 
 
@@ -161,10 +175,8 @@ def gen_label_set_from_docker_attrs(
     if not ports:
         ports = [int(input("Please manually input the port number: "))]
     port = query_selection(ports, "port")
-    # Get hostname
-    hostname = query_change(name, "hostname")
     # Generate config
-    config = ServiceConfig(name, rule=Rule("Host", hostname), port=port)
+    config = ServiceConfig(name, port=port)
 
     return gen_label_set_from_limited_info(config)
 

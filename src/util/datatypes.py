@@ -1,6 +1,6 @@
 """Module containing datatypes used in other modules"""
 
-from typing import List
+from typing import List, Optional
 from util.errors import UnknownRuleTypeException
 from dataclasses import dataclass
 
@@ -59,7 +59,8 @@ class ServiceConfig:
     """
 
     deploy_name: str
-    rule: Rule
+    rule: Optional[Rule] = None
+    url: str = ""
     port: int = 0
     https_redirection: bool = False
     web_entrypoint: str = "web"
