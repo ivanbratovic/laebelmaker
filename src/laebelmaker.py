@@ -83,6 +83,9 @@ def main() -> Optional[NotImplementedType]:
             labels = [gen_label_set_from_container(container)]
         except NoInformationException:
             print(f"Invalid container identifier given: {container!r}.")
+        except ModuleNotFoundError:
+            print(f"Please install the docker module to use this feature.")
+
     elif args.files:
         for arg in args.files:
             try:

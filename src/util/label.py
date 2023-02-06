@@ -19,11 +19,6 @@ from util.input import input_item, query_selection, query_change
 from util.errors import NoInformationException
 import yaml
 
-try:
-    import docker
-except ModuleNotFoundError:
-    print("Install the docker module for advanced Docker support")
-    docker = None
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2022, Ivan Bratović"
@@ -32,8 +27,6 @@ __license__ = "MIT"
 
 ROUTER_PREFIX = "traefik.http.routers"
 SERVICE_PREFIX = "traefik.http.services"
-if docker:
-    DOCKER_CLIENT = docker.from_env()
 
 
 def traefik_enable() -> str:
@@ -182,9 +175,9 @@ def gen_label_set_from_docker_attrs(
 
 
 def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
-    if not docker:
-        return ("", [])
+    import docker
 
+    DOCKER_CLIENT = docker.from_env()
     try:
         container = DOCKER_CLIENT.containers.get(container_name)
     except docker.errors.NotFound:
@@ -196,8 +189,9 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
 def gen_label_set_from_image(
     image_name: str, override_name: str = ""
 ) -> Tuple[str, List[str]]:
-    if not docker:
-        return ("", [])
+    import docker
+
+    DOCKER_CLIENT = docker.from_env()
 
     try:
         DOCKER_CLIENT.images.get(image_name)
@@ -232,9 +226,18 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
         service_dict: Dict[str, Any] = data["services"][service_name]
         image_name: str = service_dict["image"]
         try:
+            import docker
+        except ModuleNotFoundError:
+            print(
+                "The docker module is not installed. Laebelmaker will have to query some extra information..."
+            )
+            return gen_label_set_from_user(service_name)
+        try:
             title, label_set = gen_label_set_from_image(image_name, service_name)
             if label_set:
                 return title, label_set
+            else:
+                return gen_label_set_from_user(service_name)
         except docker.errors.ImageNotFound:
             raise NoInformationException(
                 f"Invalid docker image: {image_name!r} in {path!r}."
@@ -243,10 +246,6 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             raise NoInformationException(
                 f"Invalid image tag: {image_name!r} in {path!r}."
             )
-        print(
-            "The docker module is not installed. We'll have to query some information from you..."
-        )
-        return gen_label_set_from_user(service_name)
     except KeyError:
         try:
             build_file = service_dict["build"]
