@@ -120,14 +120,25 @@ Try running: laebelmaker --help
 * [x] Generate labels from existing service definitions (e.g. Docker Compose YAML files)
 * [x] Learn how to and publish this project to PyPi
 * [x] Add combined Rule types (with logical operators)
-* [ ] Add more data sources
-* [ ] Add more Rule types
-* [ ] MAYBE: Compatibility for Windows machines
+* [ ] Add automated tests
+* [ ] Remove pyyaml as a hard dependency
+* [ ] Add local Traefik config as data source (e.g. for entrypoint and TLS resolver names)
+* [ ] Add Dockerfile as a data source
+* [ ] Add K8s YAML as a data source
+* [ ] Add more sophisticated Rule parsing (e.g. from a given URL)
+
+Something to think about:
+
+* [ ] Expand out of Traefik into a more general use-case
+* [ ] Compatibility for Windows machines
 
 ## Guidelines for development
 
 * Ease of use is a priority
-* More guidelines must be added
+* Use sensible defaults without asking, when possible
+* When defaults are not possible, offer the user a sensible prefilled value
+* The code should be as Pythonic as possible
+* Use type hints as much as possible to catch logical errors
 
 ## For developers
 
