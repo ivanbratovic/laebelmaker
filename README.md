@@ -140,27 +140,32 @@ Something to think about:
 * The code should be as Pythonic as possible
 * Use type hints as much as possible to catch logical errors
 
-## For developers
+## Local development setup
 
-For local development, a virtual environment is highly recommended. The following
-section will assume you installed a virtual environment with the venv module:
+For local development, a [virtual environment](https://docs.python.org/3/tutorial/venv.html)
+is highly recommended. The following section will assume you installed a virtual
+environment with the [`venv`](https://docs.python.org/3/library/venv.html) module:
 ```
 python3 -m venv venv
 ```
 
-Install all requirements before contributing. This is required for `pre-commit`.
 All requirements for development are given in `requirements-dev.txt`.
+Install all of them before contributing. This is required for `pre-commit`.
 
 Before commiting, install pre-commit hooks for Git by running:
 ```
 pre-commit install
 ```
 
-This will run Black, MyPy and PyLint before commiting.
+This will run the following programs to verify a commit:
+
+* [Black](https://pypi.org/project/black) - code formatting
+* [MyPy](https://mypy.readthedocs.io/en/stable/) - static type checking
+* [PyLint](https://pypi.org/project/pylint/) - code linting
 
 You can install the Laebelmaker project locally in
 [Development Mode](https://setuptools.pypa.io/en/latest/userguide/development_mode.html):
 ```
 python3 -m pip install -e .
 ```
-The project will be installed but will remain editable.
+The project will be installed in the virtual environment but will remain editable.
