@@ -1,6 +1,6 @@
 """Module containing useful functions to get user input"""
 
-from typing import *
+from typing import Any, Optional
 from util.errors import NoInformationException
 import readline
 
@@ -23,7 +23,6 @@ def input_prefilled(prompt: str, text: str = "") -> str:
 def input_item(name: str, typ: type, item_orig: Optional[Any] = None) -> Any:
     if typ == int:
         hint_text = " (integer)"
-
     elif typ == bool:
         hint_text = " (yes/No)"
     else:
