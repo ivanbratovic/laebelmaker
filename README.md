@@ -57,15 +57,15 @@ options:
 
 ```
 $ laebelmaker -i
-Enter value for 'deploy name': testapp
-Enter new value for 'hostname and context path': test/traefik
-Enter new value for 'port': 25565
+Enter value for 'deploy name': myapp
+Enter value for 'url': myapp.example.com
+Enter value for 'port' (integer): 25565
 Enter value for 'https redirection' (yes/No): no
--- START GENERATED LABELS --
+--START GENERATED LABELS FOR 'myapp'--
 traefik.enable=true
-traefik.http.routers.testapp.rule=Host(`test`) && Path(`/traefik`)
-traefik.http.services.testapp.loadbalancer.server.port=25565
--- END GENERATED LABELS   --
+traefik.http.routers.myapp.rule=Host(`myapp.example.com`)
+traefik.http.services.myapp.loadbalancer.server.port=25565
+--END GENERATED LABELS FOR 'myapp'--
 ```
 
 
@@ -83,23 +83,23 @@ Found multiple services.
  1. testapp
  2. testapp-db
 Service number to use (default 1): 1
-Enter new value for 'hostname': testapp-customname
+Enter value for 'url': testapp.example.com/api
 Enter value for 'https redirection' (yes/No): yes
-Enter new value for 'web entrypoint': http
-Enter new value for 'websecure entrypoint': https
+Enter value for 'web entrypoint': https
+Enter value for 'websecure entrypoint': https
 Enter value for 'tls resolver': letsencrypt
--- START GENERATED LABELS --
+--START GENERATED LABELS FOR 'testapp'--
   - traefik.enable=true
-  - traefik.http.routers.testapp.rule=Host(`testapp-customname`)
-  - traefik.http.routers.testapp.entrypoints=http
-  - traefik.http.routers.testapp-https.rule=Host(`testapp-customname`)
+  - traefik.http.routers.testapp.rule=(Host(`testapp.example.com`) && PathPrefix(`/api`))
+  - traefik.http.routers.testapp.entrypoints=https
+  - traefik.http.routers.testapp-https.rule=(Host(`testapp.example.com`) && PathPrefix(`/api`))
   - traefik.http.routers.testapp-https.entrypoints=https
   - traefik.http.routers.testapp.middlewares=testapp-redir
   - traefik.http.middlewares.testapp-redir.redirectscheme.scheme=https
   - traefik.http.routers.testapp-https.tls=true
   - traefik.http.routers.testapp-https.tls.certresolver=letsencrypt
   - traefik.http.services.testapp.loadbalancer.server.port=80
--- END GENERATED LABELS   --
+--END GENERATED LABELS FOR 'testapp'--
 ```
 
 If an invalid file is given, Laebelmaker should hopefully print a
