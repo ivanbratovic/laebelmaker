@@ -137,10 +137,10 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[st
                     rule = domain_rule
                 elif path:
                     rule = context_rule
-                else:
-                    raise NoInformationException(
-                        "Invalid hostname and context path definition"
-                    )
+            if not rule:
+                raise NoInformationException(
+                    "Invalid hostname and context path definition"
+                )
             config.rule = rule
 
     return gen_simple_label_set_for_service(config)
