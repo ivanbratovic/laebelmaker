@@ -138,7 +138,7 @@ python3 -m venv venv
 ```
 
 Install all requirements before contributing. This is required for `pre-commit`.
-All requirements for development are given in `requirements.txt`.
+All requirements for development are given in `requirements-dev.txt`.
 
 Before commiting, install pre-commit hooks for Git by running:
 ```
