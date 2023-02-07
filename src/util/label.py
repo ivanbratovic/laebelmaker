@@ -217,13 +217,16 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
         raise NoInformationException(f"File {path!r} does not contain valid YAML.")
     # Get service name
     try:
-        possible_services = [str(service) for service in data["services"]]
+        services_dict: Dict[str, Any] = data["services"]
     except KeyError:
+        raise NoInformationException(f"No 'services' key in {path!r}.")
+    if not services_dict:
         raise NoInformationException(f"No services defined in {path!r}.")
+    possible_services = [str(service) for service in services_dict]
     service_name: str = query_selection(possible_services, "service")
+    service_dict = services_dict[service_name]
     # Get entrypoint names
     try:
-        service_dict: Dict[str, Any] = data["services"][service_name]
         image_name: str = service_dict["image"]
         try:
             import docker
