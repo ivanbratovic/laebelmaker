@@ -13,10 +13,10 @@ e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 
 from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
-from util.datatypes import ServiceConfig, Rule, CombinedRule
-from util.loader import Loader
-from util.input import input_item, query_selection, query_change
-from util.errors import NoInformationException
+from utils.datatypes import ServiceConfig, Rule, CombinedRule
+from utils.loader import Loader
+from utils.input import input_item, query_selection, query_change
+from utils.errors import NoInformationException
 import yaml
 
 

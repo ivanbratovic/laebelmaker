@@ -1,7 +1,7 @@
 """Module containing datatypes used in other modules"""
 
 from typing import List, Optional
-from util.errors import UnknownRuleTypeException
+from utils.errors import UnknownRuleTypeException
 from dataclasses import dataclass
 
 

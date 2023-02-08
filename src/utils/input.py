@@ -1,7 +1,7 @@
 """Module containing useful functions to get user input"""
 
 from typing import Any, Optional
-from util.errors import NoInformationException
+from utils.errors import NoInformationException
 import readline
 
 __author__ = "Ivan Bratović"
