@@ -16,8 +16,8 @@ services:
     testapp-db:
         image: custom/database
         build:
-          context: db_data
-          dockerfile: ./webapp/db.Dockerfile
+          context: webapp
+          dockerfile: ./db.Dockerfile
         hostname: testapp-db
         container_name: testapp-db
         volumes:
