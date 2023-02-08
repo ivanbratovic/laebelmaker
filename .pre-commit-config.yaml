@@ -2,22 +2,22 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
   - repo: https://github.com/ambv/black
-    rev: 22.3.0
+    rev: 23.1.0
     hooks:
       - id: black
         args: [--diff, --check]
 
   - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a4
+    rev: v3.0.0a5
     hooks:
       - id: pylint
         args: [--disable=all, --enable=unused-import]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.960
+    rev: v1.0.0
     hooks:
       - id: mypy
         exclude: ^tests/
         args: [--strict, --namespace-packages, --ignore-missing-imports]
         additional_dependencies:
-          - "types-PyYAML>=6.0.3"
+          - "types-PyYAML>=6.0.12"
