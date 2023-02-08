@@ -227,7 +227,15 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     service_dict = services_dict[service_name]
     # Get entrypoint names
     try:
-        image_name: str = service_dict["image"]
+        build_file: str = service_dict["build"]
+        raise NotImplementedError("Parsing Dockerfile is not implemented yet")
+    except KeyError:
+        try:
+            image_name: str = service_dict["image"]
+        except KeyError:
+            raise NoInformationException(
+                f"No image or build information found in service definition in {path!r}."
+            )
         try:
             import docker
         except ModuleNotFoundError:
@@ -249,13 +257,5 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             raise NoInformationException(
                 f"Invalid image tag: {image_name!r} in {path!r}."
             )
-    except KeyError:
-        try:
-            build_file = service_dict["build"]
-        except KeyError:
-            raise NoInformationException(
-                f"No image or build information found in service definition in {path!r}."
-            )
-        raise NotImplementedError("Parsing Dockerfile is not implemented yet")
     except TypeError:
         raise NoInformationException(f"Invalid service: {service_name!r} in {path!r}")
