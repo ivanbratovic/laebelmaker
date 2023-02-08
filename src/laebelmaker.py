@@ -4,8 +4,7 @@
 Generates Traefik labels for use in e.g. Docker containers.
 """
 
-from types import NotImplementedType
-from typing import Optional, List, Tuple, Callable
+from typing import List, Tuple, Callable
 from util.label import (
     gen_label_set_from_user,
     gen_label_set_from_compose,
@@ -36,9 +35,9 @@ def has_yaml_extension(path: str) -> bool:
     return basename.lower().endswith(".yaml") or basename.lower().endswith(".yml")
 
 
-def main() -> Optional[NotImplementedType]:
-    args: Optional[argparse.Namespace] = None
-    parser: Optional[argparse.ArgumentParser] = None
+def main() -> None:
+    args: argparse.Namespace
+    parser: argparse.ArgumentParser
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Generate Traefik labels")
     parser.add_argument(
@@ -63,9 +62,9 @@ def main() -> Optional[NotImplementedType]:
     )
     parser.add_argument(
         "files",
-        metavar="FILES",
+        metavar="FILE",
         nargs="*",
-        help="list of Compose files to generate labels for",
+        help="Compose file to generate labels for",
     )
 
     args, _ = parser.parse_known_args()
@@ -96,7 +95,7 @@ def main() -> Optional[NotImplementedType]:
                 print(e)
     else:
         parser.print_help()
-        return None
+        return
 
     if labels:
         for title, label_list in labels:
@@ -107,7 +106,7 @@ def main() -> Optional[NotImplementedType]:
         print("Failed to produce output.")
         print("Try running: laebelmaker --help")
 
-    return None
+    return
 
 
 if __name__ == "__main__":

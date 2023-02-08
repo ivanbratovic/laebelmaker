@@ -103,7 +103,7 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[st
         typ = type(config.__getattribute__(key))
 
         if not value:
-            new_value: Optional[Any] = None
+            new_value: Any
 
             while True:
                 new_value = input_item(key, typ, default_value)
