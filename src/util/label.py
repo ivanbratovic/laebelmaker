@@ -227,8 +227,17 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     service_dict = services_dict[service_name]
     # Get entrypoint names
     try:
-        build_file: str = service_dict["build"]
-        raise NotImplementedError("Parsing Dockerfile is not implemented yet")
+        build_def: str | Dict[str, Any] = service_dict["build"]
+        base_dir_compose: str = "/".join(path.split("/")[:-1])
+        build_dir: str
+        if isinstance(build_def, str):
+            build_dir = f"{base_dir_compose}/{build_def}/"
+        elif isinstance(build_def, dict):
+            build_dir = f"{base_dir_compose}/{build_def['context']}/"
+        build_dir = build_dir.replace("/./", "/")
+        raise NotImplementedError(
+            f"Parsing Dockerfile in {build_dir!r} is not implemented yet"
+        )
     except KeyError:
         try:
             image_name: str = service_dict["image"]
