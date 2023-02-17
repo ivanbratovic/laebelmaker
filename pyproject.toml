@@ -9,9 +9,22 @@ description = "Generate traefik labels easily"
 readme = "README.md"
 authors = [{ name = "Ivan Bratović", email = "ivanbratovic4@gmail.com" }]
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet",
+    "Topic :: Utilities",
+    "Topic :: System :: Systems Administration",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
 ]
 keywords = ["traefik", "label", "generate"]
 dependencies = [
