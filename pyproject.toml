@@ -40,4 +40,4 @@ docker = ["docker"]
 Homepage = "https://github.com/ivanbratovic/laebelmaker"
 
 [project.scripts]
-laebelmaker = "laebelmaker:main"
+laebelmaker = "laebelmaker.cli:main"

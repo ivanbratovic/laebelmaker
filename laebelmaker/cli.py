@@ -5,13 +5,13 @@ Generates Traefik labels for use in e.g. Docker containers.
 """
 
 from typing import List, Tuple, Callable
-from utils.label import (
+from laebelmaker.label import (
     gen_label_set_from_user,
     gen_label_set_from_compose,
     gen_label_set_from_container,
 )
-from utils.errors import NoInformationException
-from utils.formatter import (  # pylint: disable=unused-import
+from laebelmaker.errors import NoInformationException
+from laebelmaker.utils.formatter import (  # pylint: disable=unused-import
     formatter_docker,
     formatter_none,
     formatter_yaml,
@@ -20,7 +20,7 @@ from utils.formatter import (  # pylint: disable=unused-import
 import argparse
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2022, Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 __version__ = "0.3.0"

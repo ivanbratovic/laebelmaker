@@ -1,11 +1,10 @@
 """Module containing useful functions to get user input"""
 
 from typing import Any, Optional
-from utils.errors import NoInformationException
 import readline
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2022, Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 
@@ -38,8 +37,8 @@ def input_item(name: str, typ: type, item_orig: Optional[Any] = None) -> Any:
 
 
 def query_selection(options: list[Any], item_name: str, default_index: int = 0) -> Any:
-    if len(options) == 0:
-        raise NoInformationException(f"No {item_name} choices given.")
+    if not options:
+        raise ValueError("Options list must not be empty for query_selection.")
     if len(options) == 1:
         return options[0]
     print(f"Found multiple {item_name}s.")

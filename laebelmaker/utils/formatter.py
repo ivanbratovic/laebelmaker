@@ -9,7 +9,7 @@ Implemented formatters are at the end of the file.
 from typing import *
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2021, Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 

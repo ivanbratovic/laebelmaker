@@ -1,7 +1,7 @@
 """Module containing Laebelmaker errors"""
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2022, Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 

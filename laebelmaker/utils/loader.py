@@ -8,6 +8,8 @@ from time import sleep
 
 """
 Module for displaying a loading animation in a separate thread.
+
+Source: https://stackoverflow.com/questions/22029562/python-how-to-make-simple-animated-loading-while-process-is-running/66558182#66558182
 """
 
 __author__ = "https://stackoverflow.com/users/3867406/ted"

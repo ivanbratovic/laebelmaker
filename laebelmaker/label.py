@@ -13,15 +13,15 @@ e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 
 from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
-from utils.datatypes import ServiceConfig, Rule, CombinedRule
-from utils.loader import Loader
-from utils.input import input_item, query_selection, query_change
-from utils.errors import NoInformationException
+from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule
+from laebelmaker.errors import NoInformationException
+from laebelmaker.utils.loader import Loader
+from laebelmaker.utils.input import input_item, query_selection, query_change
 import yaml
 
 
 __author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2022, Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 

@@ -1,8 +1,12 @@
 """Module containing datatypes used in other modules"""
 
 from typing import List, Optional
-from utils.errors import UnknownRuleTypeException
+from laebelmaker.errors import UnknownRuleTypeException
 from dataclasses import dataclass
+
+__author__ = "Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
+__license__ = "MIT"
 
 
 class Rule:
