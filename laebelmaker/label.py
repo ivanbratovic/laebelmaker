@@ -251,8 +251,7 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             title, label_set = gen_label_set_from_image(image_name, service_name)
             if label_set:
                 return title, label_set
-            else:
-                return gen_label_set_from_user(service_name)
+            return gen_label_set_from_user(service_name)
         except docker.errors.ImageNotFound as exc:
             raise NoInformationException(
                 f"Invalid docker image: {image_name!r} in {path!r}."
