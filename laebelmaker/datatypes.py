@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from typing import List, Optional
-from laebelmaker.errors import UnknownRuleTypeException
+from laebelmaker.errors import UnknownRuleTypeException, NoInformationException
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2023, Ivan Bratović"
@@ -56,6 +56,27 @@ class CombinedRule(Rule):  # pylint: disable=too-few-public-methods
             full_rule += f" {operator} "
             full_rule += str(rule)
         return f"({full_rule})"
+
+    @classmethod
+    def from_string(cls, string: str) -> Rule:
+        """Creates a Rule object from a string"""
+        url_parts: List[str] = string.split("/")
+        rule: Optional[Rule] = None
+        if len(url_parts) == 1:  # Domain OR Context-Path
+            rule = Rule("Host", string)
+        elif len(url_parts) == 2:  # Domain & Context-Path
+            [domain, path] = url_parts
+            domain_rule: Rule = Rule("Host", domain)
+            context_rule: Rule = Rule("PathPrefix", f"/{path}")
+            if domain and path:
+                rule = CombinedRule(domain_rule, "&&", context_rule)
+            elif domain:
+                rule = domain_rule
+            elif path:
+                rule = context_rule
+        if not rule:
+            raise NoInformationException("Invalid hostname and context path definition")
+        return rule
 
 
 @dataclass
