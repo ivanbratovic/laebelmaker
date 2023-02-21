@@ -36,9 +36,9 @@ class CombinedRule(Rule):  # pylint: disable=too-few-public-methods
     simple rules.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=super-init-not-called
         self, *args: Rule | str
-    ) -> None:  # pylint: disable=super-init-not-called
+    ) -> None:
         self.operators: List[str] = []
         self.rules: List[Rule] = []
 
