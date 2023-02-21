@@ -13,7 +13,7 @@ __copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 
-class LabelFormatter:
+class LabelFormatter:  # pylint: disable=too-few-public-methods
     """A simple class with a main task of transforming
     a list of labels into a single, formatted string.
 
