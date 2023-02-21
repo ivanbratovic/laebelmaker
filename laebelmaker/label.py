@@ -243,7 +243,8 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             import docker
         except ModuleNotFoundError:
             print(
-                "The docker module is not installed. Laebelmaker will have to query some extra information..."
+                "The docker module is not installed. "
+                "Laebelmaker will have to query some extra information..."
             )
             return gen_label_set_from_user(service_name)
         try:
