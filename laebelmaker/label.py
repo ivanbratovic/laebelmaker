@@ -78,62 +78,51 @@ def gen_simple_label_set_for_service(
     return config.deploy_name, label_set
 
 
-def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[str]]:
-    https_related_keys: List[str] = [
+def fill_missing_info(config: ServiceConfig, attr_name: str, value: Any) -> None:
+    """Fills a single missing value from a ServiceConfig object"""
+    https_related_attrs: List[str] = [
         "tls_resolver",
         "web_entrypoint",
         "websecure_entrypoint",
     ]
-    keys_with_default_value_name: List[str] = ["url"]
+    attrs_with_default_value_name: List[str] = ["url"]
+
+    if attr_name in ("deploy_name", "rule"):
+        return
+
+    if attr_name in https_related_attrs and not config.https_redirection:
+        return
+
+    if attr_name == "port" and config.port:
+        return
+
+    default_value: Optional[str] = None
+    if attr_name in attrs_with_default_value_name:
+        default_value = config.deploy_name
+
+    typ = type(getattr(config, attr_name))
+
+    if not value:
+        new_value: Any
+
+        while True:
+            new_value = input_item(attr_name, typ, default_value)
+            if new_value == "":
+                print(f"Input of {attr_name!r} is mandatory.")
+            else:
+                break
+        setattr(config, attr_name, new_value)
+    else:
+        setattr(config, attr_name, query_change(value, attr_name))
+
+    if attr_name == "url":
+        config.rule = CombinedRule.from_string(config.url)
+
+
+def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[str]]:
+    """Generates a label set with from an incomplete config object"""
     for key, value in asdict(config).items():
-        if key in ("deploy_name", "rule"):
-            continue
-
-        if key in https_related_keys and not config.https_redirection:
-            continue
-
-        if key == "port" and config.port:
-            continue
-
-        default_value: Optional[str] = None
-        if key in keys_with_default_value_name:
-            default_value = config.deploy_name
-
-        typ = type(config.__getattribute__(key))
-
-        if not value:
-            new_value: Any
-
-            while True:
-                new_value = input_item(key, typ, default_value)
-                if new_value == "":
-                    print(f"Input of {key!r} is mandatory.")
-                else:
-                    break
-            config.__setattr__(key, new_value)
-        else:
-            config.__setattr__(key, query_change(value, key))
-
-        if key == "url":
-            url_parts: List[str] = config.url.split("/")
-            rule: Optional[Rule] = None
-            if len(url_parts) == 1:  # Domain OR Context-Path
-                rule = Rule("Host", config.url)
-            elif len(url_parts) == 2:  # Domain & Context-Path
-                [domain, path] = url_parts
-                domain_rule: Rule = Rule("Host", domain)
-                context_rule: Rule = Rule("PathPrefix", f"/{path}")
-                if domain and path:
-                    rule = CombinedRule(domain_rule, "&&", context_rule)
-                elif domain:
-                    rule = domain_rule
-                elif path:
-                    rule = context_rule
-            if not rule:
-                raise NoInformationException(
-                    "Invalid hostname and context path definition"
-                )
-            config.rule = rule
+        fill_missing_info(config, key, value)
 
     return gen_simple_label_set_for_service(config)
 
