@@ -85,13 +85,13 @@ Found multiple services.
 Service number to use (default 1): 1
 Enter value for 'url': testapp.example.com/api
 Enter value for 'https redirection' (yes/No): yes
-Enter value for 'web entrypoint': https
+Enter value for 'web entrypoint': http
 Enter value for 'websecure entrypoint': https
 Enter value for 'tls resolver': letsencrypt
 --START GENERATED LABELS FOR 'testapp'--
   - traefik.enable=true
   - traefik.http.routers.testapp.rule=(Host(`testapp.example.com`) && PathPrefix(`/api`))
-  - traefik.http.routers.testapp.entrypoints=https
+  - traefik.http.routers.testapp.entrypoints=http
   - traefik.http.routers.testapp-https.rule=(Host(`testapp.example.com`) && PathPrefix(`/api`))
   - traefik.http.routers.testapp-https.entrypoints=https
   - traefik.http.routers.testapp.middlewares=testapp-redir
