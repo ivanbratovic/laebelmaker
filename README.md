@@ -34,13 +34,13 @@ You can always consult the help menu for all features with short
 (and hopefully clear) explanations:
 
 ```
-$ laebelmaker
-usage: laebelmaker [-h] [-i] [-c NAME] [-f FORMAT] [FILES ...]
+$ laebelmaker --help
+usage: laebelmaker [-h] [-i] [-c NAME] [-f FORMAT] [FILE ...]
 
 Generate Traefik labels
 
 positional arguments:
-  FILES                 list of Compose files to generate labels for
+  FILE                  Compose file to generate labels for
 
 options:
   -h, --help            show this help message and exit
