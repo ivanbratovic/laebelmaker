@@ -13,9 +13,9 @@ __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
-import yaml
 from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
+import yaml
 from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule
 from laebelmaker.errors import NoInformationException
 from laebelmaker.utils.loader import Loader
