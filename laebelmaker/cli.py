@@ -34,6 +34,53 @@ def has_yaml_extension(path: str) -> bool:
     return basename.lower().endswith(".yaml") or basename.lower().endswith(".yml")
 
 
+def print_labels(
+    labels: List[Tuple[str, List[str]]], formatter: Callable[[List[str]], str]
+) -> None:
+    """Prints labels with a given formatter."""
+    for title, label_list in labels:
+        print(f"--START GENERATED LABELS FOR {title!r}--")
+        print(formatter(label_list), end="")
+        print(f"--END GENERATED LABELS FOR {title!r}--")
+
+
+def labels_from_user() -> List[Tuple[str, List[str]]]:
+    """Wrapper for gen_label_set_from_user with exception handling."""
+    labels: List[Tuple[str, List[str]]] = []
+    try:
+        labels = [gen_label_set_from_user("")]
+    except NoInformationException as exception:
+        print(exception)
+    return labels
+
+
+def labels_from_container(container: str) -> List[Tuple[str, List[str]]]:
+    """Wrapper for gen_label_set_from_container with exception handling."""
+    labels: List[Tuple[str, List[str]]] = []
+    try:
+        labels = [gen_label_set_from_container(container)]
+    except NoInformationException:
+        print(f"Invalid container identifier given: {container!r}.")
+    except ModuleNotFoundError:
+        print("Please install the docker module to use this feature.")
+    return labels
+
+
+def labels_from_compose_files(files: List[str]) -> List[Tuple[str, List[str]]]:
+    """Iterates over given file list and calls gen_label_set_from_compose,
+    with exception handling.
+    """
+    labels: List[Tuple[str, List[str]]] = []
+    for filepath in files:
+        try:
+            labels.append(gen_label_set_from_compose(filepath))
+        except FileNotFoundError:
+            print(f"Unknown file path: {filepath!r}")
+        except NoInformationException as exception:
+            print(exception)
+    return labels
+
+
 def main() -> None:
     """Main CLI function."""
     args: argparse.Namespace
@@ -69,39 +116,21 @@ def main() -> None:
 
     args, _ = parser.parse_known_args()
 
-    formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
     labels: List[Tuple[str, List[str]]] = []
 
     if args.interactive:
-        try:
-            labels = [gen_label_set_from_user("")]
-        except NoInformationException as e:
-            print(e)
+        labels = labels_from_user()
     elif container := args.container:
-        try:
-            labels = [gen_label_set_from_container(container)]
-        except NoInformationException:
-            print(f"Invalid container identifier given: {container!r}.")
-        except ModuleNotFoundError:
-            print(f"Please install the docker module to use this feature.")
-
-    elif args.files:
-        for arg in args.files:
-            try:
-                labels.append(gen_label_set_from_compose(arg))
-            except FileNotFoundError:
-                print(f"Unknown file path: {arg!r}")
-            except NoInformationException as e:
-                print(e)
+        labels = labels_from_container(container)
+    elif files := args.files:
+        labels = labels_from_compose_files(files)
     else:
         parser.print_help()
         return
 
     if labels:
-        for title, label_list in labels:
-            print(f"--START GENERATED LABELS FOR {title!r}--")
-            print(formatter(label_list), end="")
-            print(f"--END GENERATED LABELS FOR {title!r}--")
+        formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
+        print_labels(labels, formatter)
     else:
         print("Failed to produce output.")
         print("Try running: laebelmaker --help")
