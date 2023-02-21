@@ -6,7 +6,7 @@ Module for converting Label representations to many customizable formats.
 Implemented formatters are at the end of the file.
 """
 
-from typing import *
+from typing import List, Callable
 
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2023, Ivan Bratović"
