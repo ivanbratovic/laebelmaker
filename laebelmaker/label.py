@@ -11,18 +11,17 @@ e.g. 'traefik.http.routers.my_router.rule=Host(`www.hr`)'
 
 """
 
+__author__ = "Ivan Bratović"
+__copyright__ = "Copyright 2023, Ivan Bratović"
+__license__ = "MIT"
+
+import yaml
 from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
 from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule
 from laebelmaker.errors import NoInformationException
 from laebelmaker.utils.loader import Loader
 from laebelmaker.utils.input import input_item, query_selection, query_change
-import yaml
-
-
-__author__ = "Ivan Bratović"
-__copyright__ = "Copyright 2023, Ivan Bratović"
-__license__ = "MIT"
 
 
 ROUTER_PREFIX = "traefik.http.routers"
