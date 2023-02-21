@@ -205,7 +205,7 @@ def gen_label_set_from_image(
 
 def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     """Generates a label set from a given Compose YAML file."""
-    with open(path, "r") as docker_compose:
+    with open(path, "r", encoding="utf-8") as docker_compose:
         data = yaml.safe_load(docker_compose)
     if not data or not isinstance(data, dict):
         raise NoInformationException(f"File {path!r} does not contain valid YAML.")
