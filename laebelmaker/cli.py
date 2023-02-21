@@ -29,11 +29,13 @@ FORMATS: List[str] = [
 
 
 def has_yaml_extension(path: str) -> bool:
+    """Checks if a given path has a YAML extension."""
     basename = path.strip().split("/")[-1]
     return basename.lower().endswith(".yaml") or basename.lower().endswith(".yml")
 
 
 def main() -> None:
+    """Main CLI function."""
     args: argparse.Namespace
     parser: argparse.ArgumentParser
     # Parse command-line arguments

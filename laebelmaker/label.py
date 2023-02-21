@@ -1,8 +1,6 @@
 """
 Module for Label representations and easy handling.
-"""
 
-"""
 Label:
 Represents a string made up of tokens separated by
 a delimiter with an assignment operator.
@@ -29,12 +27,14 @@ SERVICE_PREFIX = "traefik.http.services"
 
 
 def traefik_enable() -> str:
+    """Returns a static string with a label that enables Traefik explicitly."""
     return "traefik.enable=true"
 
 
 def gen_simple_label_set_for_service(
     config: ServiceConfig, enable: bool = True
 ) -> Tuple[str, List[str]]:
+    """Generates a label set for a HTTP service from a given config."""
     label_set: List[str] = []
     if enable:
         label_set.append(traefik_enable())
@@ -139,6 +139,7 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[st
 
 
 def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
+    """Generates a label set from scratch, without any prior info."""
     if not name:
         name = input_item("deploy_name", str)
     # Get URL
@@ -147,6 +148,7 @@ def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
 
 
 def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
+    """Gets possible ports from a given Docker attributes dictionary."""
     try:
         exposed_ports: List[str] = attrs["Config"]["ExposedPorts"].keys()
     except KeyError:
@@ -162,6 +164,7 @@ def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
 def gen_label_set_from_docker_attrs(
     attrs: Dict[str, Any], name: str
 ) -> Tuple[str, List[str]]:
+    """Generates a label set from a given Docker attributes dictionary."""
     # Get port
     ports = get_tcp_ports_from_attrs(attrs)
     if not ports:
@@ -174,6 +177,7 @@ def gen_label_set_from_docker_attrs(
 
 
 def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
+    """Generates a label set from attributes of an existing container."""
     import docker
 
     DOCKER_CLIENT = docker.from_env()
@@ -188,6 +192,7 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
 def gen_label_set_from_image(
     image_name: str, override_name: str = ""
 ) -> Tuple[str, List[str]]:
+    """Generates a label set from a given Docker image."""
     import docker
 
     DOCKER_CLIENT = docker.from_env()
@@ -210,6 +215,7 @@ def gen_label_set_from_image(
 
 
 def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
+    """Generates a label set from a given Compose YAML file."""
     with open(path, "r") as docker_compose:
         data = yaml.safe_load(docker_compose)
     if not data or not isinstance(data, dict):

@@ -1,4 +1,12 @@
-from typing import *
+"""
+Module for displaying a loading animation in a separate thread.
+
+Source: https://stackoverflow.com/questions/22029562/
+"""
+
+__author__ = "https://stackoverflow.com/users/3867406/ted"
+
+from typing import Optional, Type
 from types import TracebackType
 
 from itertools import cycle
@@ -6,16 +14,18 @@ from shutil import get_terminal_size
 from threading import Thread
 from time import sleep
 
-"""
-Module for displaying a loading animation in a separate thread.
-
-Source: https://stackoverflow.com/questions/22029562/python-how-to-make-simple-animated-loading-while-process-is-running/66558182#66558182
-"""
-
-__author__ = "https://stackoverflow.com/users/3867406/ted"
-
 
 class Loader:
+    """
+    A loader-like context manager
+
+    Args:
+        desc (str, optional): The loader's description. Defaults to "Loading...".
+        end (str, optional): Final print after loading. Defaults to "Done!".
+        errend (str, optional): Final print in case of error. Defaults to "Failed!".
+        timeout (float, optional): Sleep time between prints. Defaults to 0.1.
+    """
+
     def __init__(
         self,
         desc: str = "Loading...",
@@ -23,15 +33,6 @@ class Loader:
         errend: str = "Failed!",
         timeout: float = 0.125,
     ) -> None:
-        """
-        A loader-like context manager
-
-        Args:
-            desc (str, optional): The loader's description. Defaults to "Loading...".
-            end (str, optional): Final print after loading. Defaults to "Done!".
-            errend (str, optional): Final print in case of error. Defaults to "Failed!".
-            timeout (float, optional): Sleep time between prints. Defaults to 0.1.
-        """
         self.desc = desc
         self.end = end
         self.errend = errend
@@ -42,9 +43,11 @@ class Loader:
         self.done = False
 
     def start(self) -> None:
+        """Starts the loader thread"""
         self._thread.start()
 
     def _animate(self) -> None:
+        """Draw the animation loop"""
         for c in cycle(self.steps):
             if self.done:
                 break
@@ -55,6 +58,7 @@ class Loader:
         self.start()
 
     def stop(self, *, error: bool = False) -> None:
+        """Draw the end of the animation"""
         self.done = True
         cols = get_terminal_size((80, 20)).columns
         print("\r" + " " * cols, end="", flush=True)
