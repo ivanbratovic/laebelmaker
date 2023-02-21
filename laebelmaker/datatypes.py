@@ -9,18 +9,18 @@ __copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
 
-class Rule:
+class Rule:  # pylint: disable=too-few-public-methods
     """
     Represents a Traefik HTTP Router rule
     """
 
     ALLOWED_RULES = ("Host", "Path", "PathPrefix", "Headers")
 
-    def __init__(self, t: str, *content: str) -> None:
-        if t not in self.ALLOWED_RULES:
+    def __init__(self, typ: str, *content: str) -> None:
+        if typ not in self.ALLOWED_RULES:
             raise UnknownRuleTypeException("Invalid rule or not implemented yet")
         self.content = content
-        self.typ = t
+        self.typ = typ
         assert len(self.content) > 0, "A given rule must have content"
         if self.typ == "Headers":
             assert len(self.content) == 2, "Headers rule must have only key and value"
@@ -30,13 +30,15 @@ class Rule:
         return f"{self.typ}({content})"
 
 
-class CombinedRule(Rule):
+class CombinedRule(Rule):  # pylint: disable=too-few-public-methods
     """
     Represents a combined Traefik HTTP Router rule by wrapping multiple
     simple rules.
     """
 
-    def __init__(self, *args: Rule | str) -> None:
+    def __init__(
+        self, *args: Rule | str
+    ) -> None:  # pylint: disable=super-init-not-called
         self.operators: List[str] = []
         self.rules: List[Rule] = []
 
@@ -57,7 +59,7 @@ class CombinedRule(Rule):
 
 
 @dataclass
-class ServiceConfig:
+class ServiceConfig:  # pylint: disable=too-many-instance-attributes
     """
     Contains all data neccessary to generate required labels
     """
