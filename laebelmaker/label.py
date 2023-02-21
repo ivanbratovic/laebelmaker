@@ -169,9 +169,9 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
     """Generates a label set from attributes of an existing container."""
     import docker
 
-    DOCKER_CLIENT = docker.from_env()
+    docker_client = docker.from_env()
     try:
-        container = DOCKER_CLIENT.containers.get(container_name)
+        container = docker_client.containers.get(container_name)
     except docker.errors.NotFound as exc:
         raise NoInformationException(f"Invalid container: {container_name!r}") from exc
 
@@ -184,18 +184,18 @@ def gen_label_set_from_image(
     """Generates a label set from a given Docker image."""
     import docker
 
-    DOCKER_CLIENT = docker.from_env()
+    docker_client = docker.from_env()
 
     try:
-        DOCKER_CLIENT.images.get(image_name)
+        docker_client.images.get(image_name)
     except docker.errors.ImageNotFound:
         # TODO: Consider using the Docker Registry HTTP API for getting image data
         print("Pulling image:")
         with Loader(
             f"{image_name} Pulling", f"{image_name} Pulled", f"{image_name} Failed"
         ):
-            DOCKER_CLIENT.images.pull(image_name)
-    image = DOCKER_CLIENT.images.get(image_name)
+            docker_client.images.pull(image_name)
+    image = docker_client.images.get(image_name)
     base_image_name = image_name.split(":")[0].split("/")[-1]
     name: str = base_image_name
     if override_name:
