@@ -86,7 +86,10 @@ def main() -> None:
     args: argparse.Namespace
     parser: argparse.ArgumentParser
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description="Generate Traefik labels")
+    parser = argparse.ArgumentParser(
+        prog="laebelmaker",
+        description="Generate Traefik labels",
+    )
     parser.add_argument(
         "-i",
         "--interactive",
