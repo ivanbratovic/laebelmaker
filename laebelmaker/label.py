@@ -172,8 +172,8 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
     DOCKER_CLIENT = docker.from_env()
     try:
         container = DOCKER_CLIENT.containers.get(container_name)
-    except docker.errors.NotFound:
-        raise NoInformationException(f"Invalid container: {container_name!r}")
+    except docker.errors.NotFound as exc:
+        raise NoInformationException(f"Invalid container: {container_name!r}") from exc
 
     return gen_label_set_from_docker_attrs(container.attrs, container_name)
 
@@ -212,8 +212,8 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     # Get service name
     try:
         services_dict: Dict[str, Any] = data["services"]
-    except KeyError:
-        raise NoInformationException(f"No 'services' key in {path!r}.")
+    except KeyError as exc:
+        raise NoInformationException(f"No 'services' key in {path!r}.") from exc
     if not services_dict:
         raise NoInformationException(f"No services defined in {path!r}.")
     possible_services = [str(service) for service in services_dict]
@@ -235,10 +235,10 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
     except KeyError:
         try:
             image_name: str = service_dict["image"]
-        except KeyError:
+        except KeyError as exc:
             raise NoInformationException(
                 f"No image or build information found in service definition in {path!r}."
-            )
+            ) from exc
         try:
             import docker
         except ModuleNotFoundError:
@@ -252,13 +252,15 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
                 return title, label_set
             else:
                 return gen_label_set_from_user(service_name)
-        except docker.errors.ImageNotFound:
+        except docker.errors.ImageNotFound as exc:
             raise NoInformationException(
                 f"Invalid docker image: {image_name!r} in {path!r}."
-            )
-        except docker.errors.NotFound:
+            ) from exc
+        except docker.errors.NotFound as exc:
             raise NoInformationException(
                 f"Invalid image tag: {image_name!r} in {path!r}."
-            )
-    except TypeError:
-        raise NoInformationException(f"Invalid service: {service_name!r} in {path!r}")
+            ) from exc
+    except TypeError as exc:
+        raise NoInformationException(
+            f"Invalid service: {service_name!r} in {path!r}"
+        ) from exc
