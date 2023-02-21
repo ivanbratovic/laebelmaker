@@ -44,17 +44,23 @@ class LabelFormatter:
 
 # What follows are specific formatter definitions
 
-"""Simply puts each label in its own line"""
-formatter_none: Callable[[List[str]], str] = LabelFormatter(sep="\n").format
 
-"""Creates a string of `docker run` label options"""
-formatter_docker: Callable[[List[str]], str] = LabelFormatter(
-    formatter=lambda x: "--label '" + x + "'",
-    sep=" ",
-).format
+def formatter_none(labels: List[str]) -> str:
+    """Simply puts each label in its own line"""
+    return LabelFormatter(sep="\n").format(labels)
 
-"""Creates a YAML list of Docker Compose labels"""
-formatter_yaml: Callable[[List[str]], str] = LabelFormatter(
-    formatter=lambda x: "  - " + x,
-    sep="\n",
-).format
+
+def formatter_docker(labels: List[str]) -> str:
+    """Creates a string of `docker run` label options"""
+    return LabelFormatter(
+        formatter=lambda x: "--label '" + x + "'",
+        sep=" ",
+    ).format(labels)
+
+
+def formatter_yaml(labels: List[str]) -> str:
+    """Creates a YAML list of Docker Compose labels"""
+    return LabelFormatter(
+        formatter=lambda x: "  - " + x,
+        sep="\n",
+    ).format(labels)
