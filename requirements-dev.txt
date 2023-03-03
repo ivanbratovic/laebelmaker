@@ -62,9 +62,9 @@ platformdirs==3.0.0
     #   virtualenv
 pluggy==1.0.0
     # via pytest
-pre-commit==3.0.4
+pre-commit==3.1.1
     # via laebelmaker (pyproject.toml)
-pylint==2.16.2
+pylint==2.16.3
     # via laebelmaker (pyproject.toml)
 pytest==7.2.1
     # via laebelmaker (pyproject.toml)
@@ -92,11 +92,11 @@ urllib3==1.26.14
     # via
     #   docker
     #   requests
-virtualenv==20.19.0
+virtualenv==20.20.0
     # via pre-commit
 websocket-client==1.5.1
     # via docker
-wrapt==1.14.1
+wrapt==1.15.0
     # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
