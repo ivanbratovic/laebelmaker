@@ -1,31 +1,34 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
-  - repo: https://github.com/ambv/black
-    rev: 23.1.0
-    hooks:
-      - id: black
-        args: [--diff, --check]
-
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v3.0.0a5
-    hooks:
-      - id: pylint
-        args: [--disable=all, --enable=unused-import]
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.0.0
-    hooks:
-      - id: mypy
-        exclude: ^tests/
-        args: [--strict, --namespace-packages, --ignore-missing-imports]
-        additional_dependencies:
-          - "types-PyYAML>=6.0.12"
-
   - repo: local
     hooks:
+      - id: black-check
+        name: black-check
+        entry: black
+        language: system
+        types: [python]
+        args: [--diff, --check]
+        pass_filenames: true
+
+      - id: pylint-import-check
+        name: pylint-import-check
+        entry: pylint
+        language: system
+        types: [python]
+        args: [--disable=all, --enable=unused-import]
+
+      - id: mypy-check
+        name: mypy-check
+        entry: mypy
+        exclude: ^tests/
+        language: system
+        types: [python]
+        args: [--strict, --namespace-packages, --ignore-missing-imports]
+
       - id: pytest-tests
         name: pytest-tests
         entry: pytest
         language: system
+        types: [python]
         pass_filenames: false
