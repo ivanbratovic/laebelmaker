@@ -120,7 +120,8 @@ Try running: laebelmaker --help
 * [x] Generate labels from existing service definitions (e.g. Docker Compose YAML files)
 * [x] Learn how to and publish this project to PyPi
 * [x] Add combined Rule types (with logical operators)
-* [ ] Add automated tests
+* [x] Add automated tests
+* [ ] Increase code coverage for tests
 * [ ] Add support for TCP/UDP routers and services
 * [ ] Remove pyyaml as a hard dependency
 * [ ] Add local Traefik config as data source (e.g. for entrypoint and TLS resolver names)
@@ -163,6 +164,7 @@ This will run the following programs to verify a commit:
 
 * [Black](https://pypi.org/project/black) - code formatting
 * [MyPy](https://mypy.readthedocs.io/en/stable/) - static type checking
+* [PyTest](https://docs.pytest.org/en/7.2.x/) - unit tests
 * [PyLint](https://pypi.org/project/pylint/) - code linting
 
 You can install the Laebelmaker project locally in
