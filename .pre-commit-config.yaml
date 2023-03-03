@@ -21,3 +21,11 @@ repos:
         args: [--strict, --namespace-packages, --ignore-missing-imports]
         additional_dependencies:
           - "types-PyYAML>=6.0.12"
+
+  - repo: local
+    hooks:
+      - id: pytest-tests
+        name: pytest-tests
+        entry: pytest
+        language: system
+        pass_filenames: false
