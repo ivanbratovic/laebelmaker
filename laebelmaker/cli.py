@@ -43,6 +43,8 @@ def print_labels(
 ) -> None:
     """Prints labels with a given formatter."""
     for title, label_list in labels:
+        if not label_list:
+            continue
         print(f"--START GENERATED LABELS FOR {title!r}--")
         print(formatter(label_list), end="")
         print(f"--END GENERATED LABELS FOR {title!r}--")
@@ -141,7 +143,7 @@ def main() -> None:
         print_labels(labels, formatter)
     else:
         print("Failed to produce output.")
-        print("Try running: laebelmaker --help")
+        print("You can use 'laebelmaker -i' to generate labels manually")
 
     return
 
