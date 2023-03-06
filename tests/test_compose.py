@@ -7,18 +7,38 @@ from laebelmaker.errors import NoInformationException
 from laebelmaker.label import gen_label_set_from_compose
 
 
+def docker_available() -> bool:
+    try:
+        import docker
+
+        docker.from_env()
+        return True
+    except Exception:
+        return False
+
+
 def test_compose_http() -> None:
     """Tests loading a Compose YAML file and basic HTTP labels"""
-    inputs = iter(["1", "testapp", "no"])
-    with mock.patch.object(builtins, "input", lambda _: next(inputs)):
-        gen_label_set_from_compose("examples/docker-compose-testapp.yml")
+    if docker_available():
+        inputs = iter(["1", "testapp", "no"])
+        with mock.patch.object(builtins, "input", lambda _: next(inputs)):
+            gen_label_set_from_compose("examples/docker-compose-testapp.yml")
+    else:
+        with pytest.raises(NoInformationException):
+            with mock.patch.object(builtins, "input", lambda _: "1"):
+                gen_label_set_from_compose("examples/docker-compose-testapp.yml")
 
 
 def test_compose_https() -> None:
     """Tests loading a Compose YAML file and HTTPS labels"""
-    inputs = iter(["1", "testapp", "yes", "http", "https", "letsencrypt"])
-    with mock.patch.object(builtins, "input", lambda _: next(inputs)):
-        gen_label_set_from_compose("examples/docker-compose-testapp.yml")
+    if docker_available():
+        inputs = iter(["1", "testapp", "yes", "http", "https", "letsencrypt"])
+        with mock.patch.object(builtins, "input", lambda _: next(inputs)):
+            gen_label_set_from_compose("examples/docker-compose-testapp.yml")
+    else:
+        with pytest.raises(NoInformationException):
+            with mock.patch.object(builtins, "input", lambda _: "1"):
+                gen_label_set_from_compose("examples/docker-compose-testapp.yml")
 
 
 def test_compose_build() -> None:

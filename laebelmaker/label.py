@@ -170,6 +170,7 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
     import docker
 
     docker_client = docker.from_env()
+
     try:
         container = docker_client.containers.get(container_name)
     except docker.errors.NotFound as exc:
@@ -260,6 +261,9 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             raise NoInformationException(
                 f"Invalid image tag: {image_name!r} in {path!r}."
             ) from exc
+        except docker.errors.DockerException as exc:
+            raise NoInformationException(f"Docker error.\n{exc}.") from exc
+            return ("", [])
     except TypeError as exc:
         raise NoInformationException(
             f"Invalid service: {service_name!r} in {path!r}"
