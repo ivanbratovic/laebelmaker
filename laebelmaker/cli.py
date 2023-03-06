@@ -23,8 +23,12 @@ from laebelmaker.utils.formatter import (  # pylint: disable=unused-import
     formatter_yaml,
 )
 
+# List of available/imported formatters.
+# Each format is a global variable whose name starts with "format_"
+# and ends with a suffix indicating the format type. See available format
+# types in the import statement above.
 FORMATS: List[str] = [
-    symbol.split("_")[-1] for symbol in globals() if symbol.startswith("format")
+    symbol.split("_")[-1] for symbol in globals() if symbol.startswith("formatter_")
 ]
 
 
@@ -132,6 +136,7 @@ def main() -> None:
         return
 
     if labels:
+        # Get imported formatter object from globals, by its name
         formatter: Callable[[List[str]], str] = globals()[f"formatter_{args.format}"]
         print_labels(labels, formatter)
     else:
