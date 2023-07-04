@@ -97,6 +97,12 @@ def main() -> None:
         description="Generate Traefik labels",
     )
     parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        help="print version and exit",
+    )
+    parser.add_argument(
         "-i",
         "--interactive",
         action="store_true",
@@ -126,6 +132,10 @@ def main() -> None:
     args, _ = parser.parse_known_args()
 
     labels: List[Tuple[str, List[str]]] = []
+
+    if args.version:
+        print(f"Laebelmaker v{__version__}, ")
+        return
 
     if args.interactive:
         labels = labels_from_user()
