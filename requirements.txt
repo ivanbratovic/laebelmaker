@@ -4,5 +4,5 @@
 #
 #    pip-compile --output-file=requirements.txt pyproject.toml
 #
-pyyaml==6.0
+pyyaml==6.0.1
     # via laebelmaker (pyproject.toml)
