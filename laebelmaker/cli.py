@@ -28,7 +28,9 @@ from laebelmaker.utils.formatter import (  # pylint: disable=unused-import
 # and ends with a suffix indicating the format type. See available format
 # types in the import statement above.
 FORMATS: List[str] = [
-    symbol.split("_")[-1] for symbol in globals() if symbol.startswith("formatter_")
+    "_".join(symbol.split("_")[1:])
+    for symbol in globals()
+    if symbol.startswith("formatter_")
 ]
 
 
