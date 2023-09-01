@@ -10,11 +10,11 @@ black==23.7.0
     # via laebelmaker (pyproject.toml)
 certifi==2023.7.22
     # via requests
-cfgv==3.3.1
+cfgv==3.4.0
     # via pre-commit
 charset-normalizer==3.2.0
     # via requests
-click==8.1.6
+click==8.1.7
     # via black
 dill==0.3.7
     # via pylint
@@ -22,11 +22,11 @@ distlib==0.3.7
     # via virtualenv
 docker==6.1.3
     # via laebelmaker (pyproject.toml)
-exceptiongroup==1.1.2
+exceptiongroup==1.1.3
     # via pytest
-filelock==3.12.2
+filelock==3.12.3
     # via virtualenv
-identify==2.5.26
+identify==2.5.27
     # via pre-commit
 idna==3.4
     # via requests
@@ -38,7 +38,7 @@ lazy-object-proxy==1.9.0
     # via astroid
 mccabe==0.7.0
     # via pylint
-mypy==1.4.1
+mypy==1.5.1
     # via laebelmaker (pyproject.toml)
 mypy-extensions==1.0.0
     # via
@@ -58,7 +58,7 @@ platformdirs==3.10.0
     #   black
     #   pylint
     #   virtualenv
-pluggy==1.2.0
+pluggy==1.3.0
     # via pytest
 pre-commit==3.3.3
     # via laebelmaker (pyproject.toml)
@@ -85,14 +85,15 @@ types-pyyaml==6.0.12.11
 typing-extensions==4.7.1
     # via
     #   astroid
+    #   filelock
     #   mypy
 urllib3==2.0.4
     # via
     #   docker
     #   requests
-virtualenv==20.24.2
+virtualenv==20.24.4
     # via pre-commit
-websocket-client==1.6.1
+websocket-client==1.6.2
     # via docker
 wrapt==1.15.0
     # via astroid
