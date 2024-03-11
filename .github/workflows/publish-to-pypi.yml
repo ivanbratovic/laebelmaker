@@ -34,6 +34,14 @@ jobs:
       url: https://pypi.org/p/laebelmaker
     permissions:
       id-token: write
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
   github-release:
     name: Sign artifacts and create a GitHub Release
     needs:
