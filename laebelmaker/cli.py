@@ -7,7 +7,7 @@ Generates Traefik labels for use in e.g. Docker containers.
 __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 import argparse
 from typing import List, Tuple, Callable

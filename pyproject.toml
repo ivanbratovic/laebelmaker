@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "laebelmaker"
-version = "0.4.0"
+version = "0.4.1"
 description = "Generate traefik labels easily"
 readme = "README.md"
 authors = [{ name = "Ivan Bratović", email = "ivanbratovic4@gmail.com" }]
