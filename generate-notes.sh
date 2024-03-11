@@ -8,8 +8,8 @@ version_changelog=$(head -n 1 CHANGELOG.md | cut -d" " -f2)
 version_pyproject=$(grep -E "^version" pyproject.toml | grep -E --only-matching "[0-9]+.[0-9]+.[0-9]+")
 if [[ "$version_changelog" != "$version_pyproject" ]]; then
     echo "Error generating NOTES.md: Version mismatch!"
-    echo "  Latest in CHANGELOG.md: $version_changelog"
-    echo "  Version in pyproject.toml: $version_pyproject"
+    echo " ├── In CHANGELOG file: $version_changelog"
+    echo " └── In pyproject.toml: $version_pyproject"
     exit 1
 fi
 
