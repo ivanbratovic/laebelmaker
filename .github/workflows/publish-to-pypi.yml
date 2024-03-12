@@ -11,18 +11,26 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: ">=3.9"
       - name: Install 'build'
-        run: python3 -m pip install build --user
+        run: python3 -m pip install build
       - name: Build project wheel and tarball
         run: python3 -m build
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
+          name: python-package-artifacts
           path: dist/
+      - name: Generate release notes
+        run: ./generate-notes.sh
+        shell: bash
+      - name: Upload release notes
+        uses: actions/upload-artifact@v4
+        with:
+          name: notes-artifact
+          path: NOTES.md
   publish-to-pypi:
     name: Publish Python distribution to PyPI
     if: startsWith(github.ref, 'refs/tags/')
@@ -35,10 +43,10 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        name: python-package-artifacts
         path: dist/
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
@@ -53,10 +61,10 @@ jobs:
       id-token: write
 
     steps:
-    - name: Download uploaded artifacts
-      uses: actions/download-artifact@v3
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        name: python-package-artifacts
         path: dist/
     - name: Sign the dists with Sigstore
       uses: sigstore/gh-action-sigstore-python@v1.2.3
@@ -64,9 +72,10 @@ jobs:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Generate NOTES.md file
-      run: ./generate-notes.sh
-      shell: bash
+    - name: Download NOTES.md
+      uses: actions/download-artifact@v4
+      with:
+        name: notes-artifact
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
