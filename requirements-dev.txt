@@ -4,9 +4,9 @@
 #
 #    pip-compile --extra=dev --output-file=requirements-dev.txt pyproject.toml
 #
-astroid==3.1.0
+astroid==3.2.2
     # via pylint
-black==24.3.0
+black==24.4.2
     # via laebelmaker (pyproject.toml)
 certifi==2024.2.2
     # via requests
@@ -22,13 +22,13 @@ distlib==0.3.8
     # via virtualenv
 docker==7.0.0
     # via laebelmaker (pyproject.toml)
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via pytest
-filelock==3.13.3
+filelock==3.14.0
     # via virtualenv
-identify==2.5.35
+identify==2.5.36
     # via pre-commit
-idna==3.6
+idna==3.7
     # via requests
 iniconfig==2.0.0
     # via pytest
@@ -36,7 +36,7 @@ isort==5.13.2
     # via pylint
 mccabe==0.7.0
     # via pylint
-mypy==1.9.0
+mypy==1.10.0
     # via laebelmaker (pyproject.toml)
 mypy-extensions==1.0.0
     # via
@@ -51,24 +51,24 @@ packaging==24.0
     #   pytest
 pathspec==0.12.1
     # via black
-platformdirs==4.2.0
+platformdirs==4.2.2
     # via
     #   black
     #   pylint
     #   virtualenv
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
-pre-commit==3.7.0
+pre-commit==3.7.1
     # via laebelmaker (pyproject.toml)
-pylint==3.1.0
+pylint==3.2.2
     # via laebelmaker (pyproject.toml)
-pytest==8.1.1
+pytest==8.2.1
     # via laebelmaker (pyproject.toml)
 pyyaml==6.0.1
     # via
     #   laebelmaker (pyproject.toml)
     #   pre-commit
-requests==2.31.0
+requests==2.32.1
     # via docker
 tomli==2.0.1
     # via
@@ -76,11 +76,11 @@ tomli==2.0.1
     #   mypy
     #   pylint
     #   pytest
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via pylint
 types-pyyaml==6.0.12.20240311
     # via laebelmaker (pyproject.toml)
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via
     #   astroid
     #   black
@@ -89,7 +89,7 @@ urllib3==2.2.1
     # via
     #   docker
     #   requests
-virtualenv==20.25.1
+virtualenv==20.26.2
     # via pre-commit
 
 # The following packages are considered to be unsafe in a requirements file:
