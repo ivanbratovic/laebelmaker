@@ -6,6 +6,8 @@
       "Bash(mypy:*)",
       "Bash(pylint:*)",
       "Bash(pip:*)",
+      "Bash(python3 -m pip:*)",
+      "Bash(pre-commit:*)",
       "Bash(git log:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",

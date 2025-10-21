@@ -1,8 +1,6 @@
 """Integration tests for CLI module"""
 
-import pytest
 from unittest import mock
-import builtins
 from laebelmaker.cli import (
     main,
     has_yaml_extension,
@@ -217,4 +215,7 @@ class TestMainCLI:
                 main()
 
         captured = capsys.readouterr()
-        assert "Failed to produce output" in captured.out or "laebelmaker -i" in captured.out
+        assert (
+            "Failed to produce output" in captured.out
+            or "laebelmaker -i" in captured.out
+        )

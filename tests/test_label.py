@@ -71,12 +71,23 @@ class TestGenSimpleLabelSetForService:
         assert "traefik.enable=true" in labels
         # Should have HTTPS router
         assert "traefik.http.routers.secureapp-https.entrypoints=websecure" in labels
-        assert "traefik.http.routers.secureapp-https.rule=Host(`secure.example.com`)" in labels
-        assert "traefik.http.services.secureapp-https.loadbalancer.server.port=443" in labels
+        assert (
+            "traefik.http.routers.secureapp-https.rule=Host(`secure.example.com`)"
+            in labels
+        )
+        assert (
+            "traefik.http.services.secureapp-https.loadbalancer.server.port=443"
+            in labels
+        )
         assert "traefik.http.routers.secureapp-https.tls=true" in labels
-        assert "traefik.http.routers.secureapp-https.tls.certresolver=letsencrypt" in labels
+        assert (
+            "traefik.http.routers.secureapp-https.tls.certresolver=letsencrypt"
+            in labels
+        )
         # Should NOT have HTTP router or redirect middleware
-        assert not any(label.startswith("traefik.http.routers.secureapp.") for label in labels)
+        assert not any(
+            label.startswith("traefik.http.routers.secureapp.") for label in labels
+        )
         assert not any("redirectscheme" in label for label in labels)
 
     def test_https_with_redirect(self) -> None:
@@ -101,7 +112,10 @@ class TestGenSimpleLabelSetForService:
         assert "traefik.http.routers.webapp.entrypoints=web" in labels
         # Should have redirect middleware
         assert "traefik.http.routers.webapp.middlewares=webapp-redir" in labels
-        assert "traefik.http.middlewares.webapp-redir.redirectscheme.scheme=https" in labels
+        assert (
+            "traefik.http.middlewares.webapp-redir.redirectscheme.scheme=https"
+            in labels
+        )
 
     def test_custom_entrypoints(self) -> None:
         """Test service with custom entrypoint names"""
@@ -218,19 +232,13 @@ class TestGetTcpPortsFromAttrs:
 
     def test_no_exposed_ports(self) -> None:
         """Test when no ExposedPorts key exists"""
-        attrs = {
-            "Config": {}
-        }
+        attrs = {"Config": {}}
         ports = get_tcp_ports_from_attrs(attrs)
         assert ports == []
 
     def test_empty_exposed_ports(self) -> None:
         """Test when ExposedPorts is empty"""
-        attrs = {
-            "Config": {
-                "ExposedPorts": {}
-            }
-        }
+        attrs = {"Config": {"ExposedPorts": {}}}
         ports = get_tcp_ports_from_attrs(attrs)
         assert ports == []
 

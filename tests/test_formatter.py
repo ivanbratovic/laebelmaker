@@ -1,6 +1,5 @@
 """Unit tests for formatter module"""
 
-import pytest
 from laebelmaker.utils.formatter import (
     LabelFormatter,
     formatter_none,
@@ -55,9 +54,7 @@ class TestLabelFormatter:
     def test_complex_formatter(self) -> None:
         """Test formatter with multiple custom parameters"""
         formatter = LabelFormatter(
-            formatter=lambda x: x.upper(),
-            sep=" | ",
-            end=" END\n"
+            formatter=lambda x: x.upper(), sep=" | ", end=" END\n"
         )
         labels = ["hello", "world"]
         result = formatter.format(labels)
@@ -74,7 +71,9 @@ class TestFormatterNone:
             "traefik.http.routers.myapp.rule=Host(`example.com`)",
         ]
         result = formatter_none(labels)
-        expected = "traefik.enable=true\ntraefik.http.routers.myapp.rule=Host(`example.com`)\n"
+        expected = (
+            "traefik.enable=true\ntraefik.http.routers.myapp.rule=Host(`example.com`)\n"
+        )
         assert result == expected
 
     def test_empty_labels(self) -> None:
@@ -99,7 +98,10 @@ class TestFormatterDocker:
 
     def test_basic_labels(self) -> None:
         """Test Docker run format with --label flags"""
-        labels = ["traefik.enable=true", "traefik.http.routers.myapp.rule=Host(`example.com`)"]
+        labels = [
+            "traefik.enable=true",
+            "traefik.http.routers.myapp.rule=Host(`example.com`)",
+        ]
         result = formatter_docker(labels)
         expected = "--label 'traefik.enable=true' --label 'traefik.http.routers.myapp.rule=Host(`example.com`)'\n"
         assert result == expected
@@ -134,7 +136,10 @@ class TestFormatterYaml:
 
     def test_basic_labels(self) -> None:
         """Test YAML list format"""
-        labels = ["traefik.enable=true", "traefik.http.routers.myapp.rule=Host(`example.com`)"]
+        labels = [
+            "traefik.enable=true",
+            "traefik.http.routers.myapp.rule=Host(`example.com`)",
+        ]
         result = formatter_yaml(labels)
         expected = "  - traefik.enable=true\n  - traefik.http.routers.myapp.rule=Host(`example.com`)\n"
         assert result == expected

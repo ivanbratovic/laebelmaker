@@ -2,7 +2,7 @@
 
 import pytest
 from laebelmaker.datatypes import Rule, CombinedRule, ServiceConfig
-from laebelmaker.errors import UnknownRuleTypeException, NoInformationException
+from laebelmaker.errors import UnknownRuleTypeException
 
 
 class TestRule:

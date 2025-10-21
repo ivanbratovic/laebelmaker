@@ -57,7 +57,9 @@ def gen_simple_label_set_for_service(
         # Cert resolver
         resolver = config.tls_resolver
         if not resolver:
-            raise ValueError("ServiceConfig must contain a TLS resolver when using HTTPS")
+            raise ValueError(
+                "ServiceConfig must contain a TLS resolver when using HTTPS"
+            )
         label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.tls=true")
         label_set.append(
             f"{ROUTER_PREFIX}.{service_name}-https.tls.certresolver={resolver}"

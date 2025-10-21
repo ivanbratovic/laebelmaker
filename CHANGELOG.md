@@ -1,3 +1,22 @@
+## [Unreleased]
+
+### Changed
+- Updated all development dependencies to latest versions
+- Updated PyYAML from 6.0.2 to 6.0.3 (security fix)
+- Updated black from 24.8.0 to 25.9.0
+- Updated pylint from 3.3.1 to 4.0.2
+- Updated mypy from 1.11.2 to 1.18.2
+- Updated pytest from 8.3.3 to 8.4.2
+- Updated pre-commit from 3.8.0 to 4.3.0
+- Updated requests from 2.32.3 to 2.32.5 (security fix)
+- Updated certifi from 2024.8.30 to 2025.10.5 (security fix)
+- Updated 23+ other dependencies to latest versions
+- Added Python 3.12 to supported versions in project metadata
+
+### Fixed
+- Removed unused imports from test files
+- Applied Black formatting to all source files
+
 ## 0.4.1
 
 - Bug fixes
