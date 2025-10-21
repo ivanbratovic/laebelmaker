@@ -2,9 +2,19 @@
 
 set -e
 
+# Get the first heading from CHANGELOG.md
+first_heading=$(head -n 1 CHANGELOG.md | cut -d" " -f2)
+
+# Check if the first heading is [Unreleased]
+if [[ "$first_heading" == "[Unreleased]" ]]; then
+    echo "CHANGELOG.md contains [Unreleased] section - this is not a release commit."
+    echo "Skipping release notes generation."
+    exit 0
+fi
+
 echo -e "## Changelog" > NOTES.md
 
-version_changelog=$(head -n 1 CHANGELOG.md | cut -d" " -f2)
+version_changelog="$first_heading"
 version_pyproject=$(grep -E "^version" pyproject.toml | grep -E --only-matching "[0-9]+.[0-9]+.[0-9]+")
 if [[ "$version_changelog" != "$version_pyproject" ]]; then
     echo "Error generating NOTES.md: Version mismatch!"
