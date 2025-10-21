@@ -274,7 +274,6 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
             ) from exc
         except docker.errors.DockerException as exc:
             raise NoInformationException(f"Docker error.\n{exc}.") from exc
-            return ("", [])
     except TypeError as exc:
         raise NoInformationException(
             f"Invalid service: {service_name!r} in {path!r}"
