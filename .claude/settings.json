@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(mypy:*)",
+      "Bash(pylint:*)",
+      "Bash(pip:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr comment:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__deepwiki__read_wiki_structure",
+      "mcp__context7__get-library-docs",
+      "mcp__deepwiki__read_wiki_contents",
+      "mcp__deepwiki__ask_question"
+    ]
+  }
+}
