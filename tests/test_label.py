@@ -1,11 +1,12 @@
 """Unit tests for label generation functions"""
 
 import pytest
-from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule
+from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule, TraefikConfig
 from laebelmaker.label import (
     traefik_enable,
     gen_simple_label_set_for_service,
     get_tcp_ports_from_attrs,
+    fill_missing_info,
 )
 
 
@@ -275,3 +276,101 @@ class TestGetTcpPortsFromAttrs:
         }
         ports = get_tcp_ports_from_attrs(attrs)
         assert set(ports) == {3000, 5000, 8000, 8080}
+
+
+class TestFillMissingInfoWithTraefikConfig:
+    """Test cases for fill_missing_info with TraefikConfig auto-filling"""
+
+    def test_auto_fill_web_entrypoint_from_traefik_config(self) -> None:
+        """Test that web_entrypoint is auto-filled from TraefikConfig"""
+        traefik_config = TraefikConfig(
+            entrypoints=["web", "websecure"],
+            tls_resolvers=["letsencrypt"],
+            default_web_entrypoint="web",
+            default_websecure_entrypoint="websecure",
+            default_tls_resolver="letsencrypt",
+        )
+        config = ServiceConfig(
+            deploy_name="test",
+            traefik_config=traefik_config,
+        )
+
+        # web_entrypoint should be auto-filled without prompting
+        fill_missing_info(config, "web_entrypoint", "")
+
+        assert config.web_entrypoint == "web"
+
+    def test_auto_fill_websecure_entrypoint_from_traefik_config(self) -> None:
+        """Test that websecure_entrypoint is auto-filled from TraefikConfig"""
+        traefik_config = TraefikConfig(
+            entrypoints=["web", "websecure"],
+            tls_resolvers=["letsencrypt"],
+            default_web_entrypoint="web",
+            default_websecure_entrypoint="websecure",
+            default_tls_resolver="letsencrypt",
+        )
+        config = ServiceConfig(
+            deploy_name="test",
+            https_enabled=True,
+            traefik_config=traefik_config,
+        )
+
+        # websecure_entrypoint should be auto-filled without prompting
+        fill_missing_info(config, "websecure_entrypoint", "")
+
+        assert config.websecure_entrypoint == "websecure"
+
+    def test_auto_fill_tls_resolver_from_traefik_config(self) -> None:
+        """Test that tls_resolver is auto-filled from TraefikConfig"""
+        traefik_config = TraefikConfig(
+            entrypoints=["web", "websecure"],
+            tls_resolvers=["letsencrypt"],
+            default_web_entrypoint="web",
+            default_websecure_entrypoint="websecure",
+            default_tls_resolver="letsencrypt",
+        )
+        config = ServiceConfig(
+            deploy_name="test",
+            https_enabled=True,
+            traefik_config=traefik_config,
+        )
+
+        # tls_resolver should be auto-filled without prompting
+        fill_missing_info(config, "tls_resolver", "")
+
+        assert config.tls_resolver == "letsencrypt"
+
+    def test_auto_fill_with_custom_entrypoint_names(self) -> None:
+        """Test auto-fill with custom entrypoint names from TraefikConfig"""
+        traefik_config = TraefikConfig(
+            entrypoints=["public", "secure"],
+            tls_resolvers=["myresolver"],
+            default_web_entrypoint="public",
+            default_websecure_entrypoint="secure",
+            default_tls_resolver="myresolver",
+        )
+        config = ServiceConfig(
+            deploy_name="test",
+            https_enabled=True,
+            traefik_config=traefik_config,
+        )
+
+        fill_missing_info(config, "web_entrypoint", "")
+        fill_missing_info(config, "websecure_entrypoint", "")
+        fill_missing_info(config, "tls_resolver", "")
+
+        assert config.web_entrypoint == "public"
+        assert config.websecure_entrypoint == "secure"
+        assert config.tls_resolver == "myresolver"
+
+    def test_no_auto_fill_without_traefik_config(self) -> None:
+        """Test that defaults are used when TraefikConfig is not provided"""
+        config = ServiceConfig(
+            deploy_name="test",
+            traefik_config=None,
+        )
+
+        # Without TraefikConfig, should use ServiceConfig defaults
+        # (This would normally prompt user, but we're just checking the value exists)
+        assert config.web_entrypoint == "web"  # Default from ServiceConfig
+        assert config.websecure_entrypoint == "websecure"  # Default from ServiceConfig

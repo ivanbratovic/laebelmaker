@@ -16,7 +16,7 @@ __license__ = "MIT"
 from typing import Any, Optional, List, Tuple, Dict
 from dataclasses import asdict
 import yaml
-from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule
+from laebelmaker.datatypes import ServiceConfig, Rule, CombinedRule, TraefikConfig
 from laebelmaker.errors import NoInformationException
 from laebelmaker.utils.loader import Loader
 from laebelmaker.utils.input import input_item, query_selection, query_change
@@ -100,7 +100,7 @@ def fill_missing_info(config: ServiceConfig, attr_name: str, value: Any) -> None
     ]
     attrs_with_default_value_name: List[str] = ["url"]
 
-    if attr_name in ("deploy_name", "rule"):
+    if attr_name in ("deploy_name", "rule", "traefik_config"):
         return
 
     if attr_name in https_related_attrs and not config.https_enabled:
@@ -108,6 +108,13 @@ def fill_missing_info(config: ServiceConfig, attr_name: str, value: Any) -> None
 
     if attr_name == "port" and config.port:
         return
+
+    # If TraefikConfig provided values for these attrs, skip prompting
+    if config.traefik_config and attr_name in https_related_attrs:
+        current_value = getattr(config, attr_name)
+        # If the attribute already has a non-default value from TraefikConfig, don't prompt
+        if current_value and current_value != "":
+            return
 
     default_value: Optional[str] = None
     if attr_name in attrs_with_default_value_name:
@@ -140,12 +147,14 @@ def gen_label_set_from_limited_info(config: ServiceConfig) -> Tuple[str, List[st
     return gen_simple_label_set_for_service(config)
 
 
-def gen_label_set_from_user(name: str = "") -> Tuple[str, List[str]]:
+def gen_label_set_from_user(
+    name: str = "", traefik_config: Optional[TraefikConfig] = None
+) -> Tuple[str, List[str]]:
     """Generates a label set from scratch, without any prior info."""
     if not name:
         name = input_item("deploy_name", str)
     # Get URL
-    config: ServiceConfig = ServiceConfig(name)
+    config: ServiceConfig = ServiceConfig(name, traefik_config=traefik_config)
     return gen_label_set_from_limited_info(config)
 
 
@@ -164,7 +173,7 @@ def get_tcp_ports_from_attrs(attrs: Dict[str, Any]) -> List[int]:
 
 
 def gen_label_set_from_docker_attrs(
-    attrs: Dict[str, Any], name: str
+    attrs: Dict[str, Any], name: str, traefik_config: Optional[TraefikConfig] = None
 ) -> Tuple[str, List[str]]:
     """Generates a label set from a given Docker attributes dictionary."""
     # Get port
@@ -173,12 +182,14 @@ def gen_label_set_from_docker_attrs(
         ports = [int(input("Please manually input the port number: "))]
     port = query_selection(ports, "port")
     # Generate config
-    config = ServiceConfig(name, port=port)
+    config = ServiceConfig(name, port=port, traefik_config=traefik_config)
 
     return gen_label_set_from_limited_info(config)
 
 
-def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
+def gen_label_set_from_container(
+    container_name: str, traefik_config: Optional[TraefikConfig] = None
+) -> Tuple[str, List[str]]:
     """Generates a label set from attributes of an existing container."""
     import docker
 
@@ -189,11 +200,15 @@ def gen_label_set_from_container(container_name: str) -> Tuple[str, List[str]]:
     except docker.errors.NotFound as exc:
         raise NoInformationException(f"Invalid container: {container_name!r}") from exc
 
-    return gen_label_set_from_docker_attrs(container.attrs, container_name)
+    return gen_label_set_from_docker_attrs(
+        container.attrs, container_name, traefik_config
+    )
 
 
 def gen_label_set_from_image(
-    image_name: str, override_name: str = ""
+    image_name: str,
+    override_name: str = "",
+    traefik_config: Optional[TraefikConfig] = None,
 ) -> Tuple[str, List[str]]:
     """Generates a label set from a given Docker image."""
     import docker
@@ -214,10 +229,12 @@ def gen_label_set_from_image(
     name: str = base_image_name
     if override_name:
         name = override_name
-    return gen_label_set_from_docker_attrs(image.attrs, name)
+    return gen_label_set_from_docker_attrs(image.attrs, name, traefik_config)
 
 
-def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
+def gen_label_set_from_compose(
+    path: str, traefik_config: Optional[TraefikConfig] = None
+) -> Tuple[str, List[str]]:
     """Generates a label set from a given Compose YAML file."""
     with open(path, "r", encoding="utf-8") as docker_compose:
         data = yaml.safe_load(docker_compose)
@@ -260,12 +277,14 @@ def gen_label_set_from_compose(path: str) -> Tuple[str, List[str]]:
                 "The docker module is not installed. "
                 "Laebelmaker will have to query some extra information..."
             )
-            return gen_label_set_from_user(service_name)
+            return gen_label_set_from_user(service_name, traefik_config)
         try:
-            title, label_set = gen_label_set_from_image(image_name, service_name)
+            title, label_set = gen_label_set_from_image(
+                image_name, service_name, traefik_config
+            )
             if label_set:
                 return title, label_set
-            return gen_label_set_from_user(service_name)
+            return gen_label_set_from_user(service_name, traefik_config)
         except docker.errors.ImageNotFound as exc:
             raise NoInformationException(
                 f"Invalid docker image: {image_name!r} in {path!r}."

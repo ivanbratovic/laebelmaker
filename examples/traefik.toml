@@ -1,0 +1,56 @@
+# Global configuration
+[global]
+  checkNewVersion = true
+  sendAnonymousUsage = true
+
+# EntryPoints configuration
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http]
+      [entryPoints.web.http.redirections]
+        [entryPoints.web.http.redirections.entryPoint]
+          to = "websecure"
+          scheme = "https"
+
+  [entryPoints.websecure]
+    address = ":443"
+
+# Let's Encrypt setup
+[certificatesResolvers]
+  [certificatesResolvers.letsencrypt]
+    [certificatesResolvers.letsencrypt.acme]
+      email = "user@example.com"
+      storage = "/etc/traefik/acme.json"
+      [certificatesResolvers.letsencrypt.acme.httpChallenge]
+        entryPoint = "web"
+
+# Traefik logs configuration
+[log]
+  level = "ERROR"
+
+# Access logs configuration
+[accessLog]
+  filePath = "/var/log/access.log"
+
+# Metrics
+[metrics]
+  [metrics.prometheus]
+    addEntryPointsLabels = true
+    addRoutersLabels = true
+    addServicesLabels = true
+
+# Enable API and dashboard
+[api]
+  insecure = true
+  dashboard = true
+
+# Ping configuration
+[ping]
+  entryPoint = "traefik"
+
+# Docker configuration backend
+[providers]
+  [providers.docker]
+    endpoint = "unix:///var/run/docker.sock"
+    exposedByDefault = false

@@ -1,0 +1,62 @@
+# Global configuration
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+# EntryPoints configuration
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: :443
+
+# Let's Encrypt setup
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: 'user@example.com'
+      storage: '/etc/traefik/acme.json'
+      httpChallenge:
+        entryPoint: web
+
+# Traefik logs configuration
+
+# Traefik logs
+# Enabled by default and log to stdout
+log:
+  # Log level
+  level: ERROR
+
+# Access logs configuration
+
+accessLog:
+  # Sets the file path for the access log. If not specified, stdout will be used.
+  # Intermediate directories are created if necessary.
+  filePath: /var/log/access.log
+
+# Enable ping
+ping:
+  # Name of the related entry point
+  #
+  # Optional
+  # Default: "traefik"
+  #
+  entryPoint: traefik
+
+# Docker configuration backend
+
+providers:
+  # Enable Docker configuration backend
+  docker:
+    # Docker server endpoint. Can be a tcp or a unix socket endpoint.
+    endpoint: unix:///var/run/docker.sock
+    # Expose containers by default in traefik
+    exposedByDefault: false

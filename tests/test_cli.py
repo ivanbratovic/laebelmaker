@@ -159,7 +159,7 @@ class TestMainCLI:
             with mock.patch("laebelmaker.cli.labels_from_container") as mock_labels:
                 mock_labels.return_value = []
                 main()
-                mock_labels.assert_called_once_with("mycontainer")
+                mock_labels.assert_called_once_with("mycontainer", None)
 
     def test_file_argument_recognized(self) -> None:
         """Test that file arguments are recognized"""
@@ -167,7 +167,7 @@ class TestMainCLI:
             with mock.patch("laebelmaker.cli.labels_from_compose_files") as mock_labels:
                 mock_labels.return_value = []
                 main()
-                mock_labels.assert_called_once_with(["docker-compose.yml"])
+                mock_labels.assert_called_once_with(["docker-compose.yml"], None)
 
     def test_multiple_files(self) -> None:
         """Test processing multiple compose files"""
@@ -175,7 +175,7 @@ class TestMainCLI:
             with mock.patch("laebelmaker.cli.labels_from_compose_files") as mock_labels:
                 mock_labels.return_value = []
                 main()
-                mock_labels.assert_called_once_with(["file1.yml", "file2.yaml"])
+                mock_labels.assert_called_once_with(["file1.yml", "file2.yaml"], None)
 
     def test_format_option_docker(self) -> None:
         """Test --format docker option"""

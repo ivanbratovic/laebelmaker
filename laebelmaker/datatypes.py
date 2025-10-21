@@ -8,6 +8,10 @@ __author__ = "Ivan Bratović"
 __copyright__ = "Copyright 2023, Ivan Bratović"
 __license__ = "MIT"
 
+# Default entrypoint names
+DEFAULT_WEB_ENTRYPOINT = "web"
+DEFAULT_WEBSECURE_ENTRYPOINT = "websecure"
+
 
 class Rule:  # pylint: disable=too-few-public-methods
     """
@@ -81,6 +85,22 @@ class CombinedRule(Rule):  # pylint: disable=too-few-public-methods
 
 
 @dataclass
+class TraefikConfig:
+    """
+    Contains Traefik configuration data from traefik.yml/traefik.toml
+
+    All values are determined from the actual Traefik config file and should
+    be used as authoritative defaults.
+    """
+
+    entrypoints: List[str]
+    tls_resolvers: List[str]
+    default_web_entrypoint: str
+    default_websecure_entrypoint: str
+    default_tls_resolver: str
+
+
+@dataclass
 class ServiceConfig:  # pylint: disable=too-many-instance-attributes
     """
     Contains all data neccessary to generate required labels
@@ -92,6 +112,20 @@ class ServiceConfig:  # pylint: disable=too-many-instance-attributes
     port: int = 0
     https_enabled: bool = False
     https_redirection: bool = False
-    web_entrypoint: str = "web"
-    websecure_entrypoint: str = "websecure"
+    web_entrypoint: str = DEFAULT_WEB_ENTRYPOINT
+    websecure_entrypoint: str = DEFAULT_WEBSECURE_ENTRYPOINT
     tls_resolver: str = ""
+    traefik_config: Optional[TraefikConfig] = None
+
+    def __post_init__(self) -> None:
+        """Apply TraefikConfig values if available (always override defaults)"""
+        if self.traefik_config:
+            # TraefikConfig is authoritative - always use its values
+            if self.web_entrypoint == DEFAULT_WEB_ENTRYPOINT:
+                self.web_entrypoint = self.traefik_config.default_web_entrypoint
+            if self.websecure_entrypoint == DEFAULT_WEBSECURE_ENTRYPOINT:
+                self.websecure_entrypoint = (
+                    self.traefik_config.default_websecure_entrypoint
+                )
+            if not self.tls_resolver:
+                self.tls_resolver = self.traefik_config.default_tls_resolver
