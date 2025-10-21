@@ -81,7 +81,8 @@ def query_selection(options: list[Any], item_name: str, default_index: int = 0) 
     selection: int = default_index
     if answer:
         selection = int(answer) - 1
-    assert selection in range(len(options)), "Selected index out of range"
+    if selection not in range(len(options)):
+        raise IndexError(f"Selected index {selection} out of range (0-{len(options)-1})")
     return options[selection]
 
 

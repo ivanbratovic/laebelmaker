@@ -41,7 +41,8 @@ def gen_simple_label_set_for_service(
     service_name: str = config.deploy_name
     port: int = config.port
     rule: Optional[Rule] = config.rule
-    assert rule, "config.rule should not be None"
+    if not rule:
+        raise ValueError("config.rule cannot be None")
     if config.https_enabled:
         # HTTPS router
         label_set.append(
@@ -55,9 +56,8 @@ def gen_simple_label_set_for_service(
 
         # Cert resolver
         resolver = config.tls_resolver
-        assert (
-            len(resolver) > 0
-        ), "ServiceConfig must contain a TLS resolver when using HTTPS"
+        if not resolver:
+            raise ValueError("ServiceConfig must contain a TLS resolver when using HTTPS")
         label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.tls=true")
         label_set.append(
             f"{ROUTER_PREFIX}.{service_name}-https.tls.certresolver={resolver}"

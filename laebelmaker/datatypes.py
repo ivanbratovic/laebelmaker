@@ -21,9 +21,10 @@ class Rule:  # pylint: disable=too-few-public-methods
             raise UnknownRuleTypeException("Invalid rule or not implemented yet")
         self.content = content
         self.typ = typ
-        assert len(self.content) > 0, "A given rule must have content"
-        if self.typ == "Headers":
-            assert len(self.content) == 2, "Headers rule must have only key and value"
+        if len(self.content) == 0:
+            raise ValueError("A given rule must have content")
+        if self.typ == "Headers" and len(self.content) != 2:
+            raise ValueError("Headers rule must have only key and value")
 
     def __str__(self) -> str:
         content = "`" + "`, `".join(self.content) + "`"
