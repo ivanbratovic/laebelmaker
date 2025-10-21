@@ -125,10 +125,11 @@ Try running: laebelmaker --help
 * [x] Learn how to and publish this project to PyPi
 * [x] Add combined Rule types (with logical operators)
 * [x] Add automated tests
+* [x] Add local Traefik config as data source (e.g. for entrypoint and TLS resolver names)
+* [ ] Improve Traefik Config behaviours, like skipping HTTPS prompts when there's already http.redirections
 * [ ] Increase code coverage for tests
 * [ ] Add support for TCP/UDP routers and services
 * [ ] Remove pyyaml as a hard dependency
-* [ ] Add local Traefik config as data source (e.g. for entrypoint and TLS resolver names)
 * [ ] Add Dockerfile as a data source
 * [ ] Add K8s YAML as a data source
 * [ ] Add Docker Swarm YAML as a data source
