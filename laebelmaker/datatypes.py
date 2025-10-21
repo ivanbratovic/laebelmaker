@@ -89,6 +89,7 @@ class ServiceConfig:  # pylint: disable=too-many-instance-attributes
     rule: Optional[Rule] = None
     url: str = ""
     port: int = 0
+    https_enabled: bool = False
     https_redirection: bool = False
     web_entrypoint: str = "web"
     websecure_entrypoint: str = "websecure"

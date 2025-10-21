@@ -32,7 +32,7 @@ def test_compose_http() -> None:
 def test_compose_https() -> None:
     """Tests loading a Compose YAML file and HTTPS labels"""
     if docker_available():
-        inputs = iter(["1", "testapp", "yes", "http", "https", "letsencrypt"])
+        inputs = iter(["1", "testapp", "yes", "yes", "http", "https", "letsencrypt"])
         with mock.patch.object(builtins, "input", lambda _: next(inputs)):
             gen_label_set_from_compose("examples/docker-compose-testapp.yml")
     else:

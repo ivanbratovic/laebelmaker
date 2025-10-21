@@ -39,19 +39,43 @@ def gen_simple_label_set_for_service(
     if enable:
         label_set.append(traefik_enable())
     service_name: str = config.deploy_name
-    # Traefik router
+    port: int = config.port
     rule: Optional[Rule] = config.rule
     assert rule, "config.rule should not be None"
-    label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
-    if config.https_redirection:
+    if config.https_enabled:
         # HTTPS router
-        label_set.append(
-            f"{ROUTER_PREFIX}.{service_name}.entrypoints={config.web_entrypoint}"
-        )
-        label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.rule={rule}")
         label_set.append(
             f"{ROUTER_PREFIX}.{service_name}-https.entrypoints={config.websecure_entrypoint}"
         )
+        label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.rule={rule}")
+        if port > 0:
+            label_set.append(
+                f"{SERVICE_PREFIX}.{service_name}-https.loadbalancer.server.port={port}"
+            )
+
+        # Cert resolver
+        resolver = config.tls_resolver
+        assert (
+            len(resolver) > 0
+        ), "ServiceConfig must contain a TLS resolver when using HTTPS"
+        label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.tls=true")
+        label_set.append(
+            f"{ROUTER_PREFIX}.{service_name}-https.tls.certresolver={resolver}"
+        )
+        if not config.https_redirection:
+            return config.deploy_name, label_set
+    # HTTP router
+    label_set.append(
+        f"{ROUTER_PREFIX}.{service_name}.entrypoints={config.web_entrypoint}"
+    )
+    label_set.append(f"{ROUTER_PREFIX}.{service_name}.rule={rule}")
+    if port > 0:
+        # Traefik service
+        label_set.append(
+            f"{SERVICE_PREFIX}.{service_name}.loadbalancer.server.port={port}"
+        )
+
+    if config.https_redirection:
         # Middleware for redirect
         middleware_name = f"{service_name}-redir"
         label_set.append(
@@ -60,21 +84,7 @@ def gen_simple_label_set_for_service(
         label_set.append(
             f"traefik.http.middlewares.{middleware_name}.redirectscheme.scheme=https"
         )
-        # Cert resolver
-        resolver = config.tls_resolver
-        assert (
-            len(resolver) > 0
-        ), "ServiceConfig must contain a TLS resolver when using HTTPS redirection"
-        label_set.append(f"{ROUTER_PREFIX}.{service_name}-https.tls=true")
-        label_set.append(
-            f"{ROUTER_PREFIX}.{service_name}-https.tls.certresolver={resolver}"
-        )
-    port = config.port
-    if port > 0:
-        # Traefik service
-        label_set.append(
-            f"{SERVICE_PREFIX}.{service_name}.loadbalancer.server.port={port}"
-        )
+
     return config.deploy_name, label_set
 
 
@@ -84,13 +94,14 @@ def fill_missing_info(config: ServiceConfig, attr_name: str, value: Any) -> None
         "tls_resolver",
         "web_entrypoint",
         "websecure_entrypoint",
+        "https_redirection",
     ]
     attrs_with_default_value_name: List[str] = ["url"]
 
     if attr_name in ("deploy_name", "rule"):
         return
 
-    if attr_name in https_related_attrs and not config.https_redirection:
+    if attr_name in https_related_attrs and not config.https_enabled:
         return
 
     if attr_name == "port" and config.port:
